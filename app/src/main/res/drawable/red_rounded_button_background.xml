@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Created By Youcheng-->
+<!--Youcheng: Please be aware when using this button that by default there is no padding for this button-->
+<selector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    >
+    <item android:state_pressed="true" >
+        <shape android:shape="rectangle"  >
+            <corners android:radius="3dip" />
+            <stroke android:width="1dip" android:color="@android:color/red" />
+            <gradient android:angle="-90" android:color="@android:color/red" />
+        </shape>
+    </item>
+    <item android:state_focused="true">
+        <shape android:shape="rectangle"  >
+            <corners android:radius="3dip" />
+            <stroke android:width="1dip" android:color="@android:color/red" />
+            <solid android:color="red"/>
+        </shape>
+    </item>
+    <item >
+        <shape android:shape="rectangle"  >
+            <corners android:radius="3dip" />
+            <stroke android:width="1dip" android:color="@android:color/red" />
+            <gradient android:angle="-90" android:startColor="@android:color/holo_red_light" android:endColor="@android:color/holo_red_dark" />
+        </shape>
+    </item>
+</selector>

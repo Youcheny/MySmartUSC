@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CSCI_310_Project_MySmartUSC</string>
+    <string name="login_button_text">Login to Gmail</string>
 </resources>
