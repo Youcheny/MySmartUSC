@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "617686899030",
+    "firebase_url": "https://mysmartusc.firebaseio.com",
+    "project_id": "mysmartusc",
+    "storage_bucket": "mysmartusc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:617686899030:android:3829959e481d7d53",
+        "android_client_info": {
+          "package_name": "com.example.youchengye.csci_310_project_mysmartusc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "617686899030-0sh916n7ecespepnk45897sb1d6lgsgc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_ueTrLG4WLmLTPicXBaWVHPWlNNlCPIU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
