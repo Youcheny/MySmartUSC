@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "617686899030-ov6ehcm86k0td7q5liej0sejt78eo884.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.youchengye.csci_310_project_mysmartusc",
+            "certificate_hash": "07c9048594beb49e8a872b7b6626d805efe16543"
+          }
+        },
+        {
           "client_id": "617686899030-0sh916n7ecespepnk45897sb1d6lgsgc.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "617686899030-0sh916n7ecespepnk45897sb1d6lgsgc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

@@ -16,5 +16,6 @@ public class MainActivity extends AppCompatActivity {
     public void onClickLogin(View view) {
         Intent gotoLoginPage = new Intent(this, LoginActivity.class);
         startActivity(gotoLoginPage);
+
     }
 }
