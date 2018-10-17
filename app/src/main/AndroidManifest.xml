@@ -16,21 +16,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<<<<<<< HEAD
         <activity android:name=".LoginActivity" />
         <activity android:name=".KeywordAddressModificationActivity"></activity>
-=======
-
-        <activity android:name=".LoginActivity" />
-
-        <!--<activity android:name=".Notification">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
-
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
-        <!--</activity>-->
->>>>>>> 64cffcdda44efed30b9b4bcc91577269b1fcc347
     </application>
 
 </manifest>
