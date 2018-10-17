@@ -10,4 +10,12 @@
         <item>Content Star List</item>
         <item>Important Email Addresses List</item>
     </string-array>
+
+
+
+
+    //notification system
+    <string name = "channel_name">MySmartUSC Notification Channel</string>
+    <string name = "channel_description">Push important app message to users</string>
+    <string name="channel_id">Important Mails</string>
 </resources>
