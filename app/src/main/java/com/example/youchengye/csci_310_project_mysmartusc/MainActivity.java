@@ -16,6 +16,12 @@ public class MainActivity extends AppCompatActivity {
     public void onClickLogin(View view) {
         Intent gotoLoginPage = new Intent(this, LoginActivity.class);
         startActivity(gotoLoginPage);
-
     }
+
+    // --- for testing only!
+    public void onClickKeywordsModification(View view) {
+        Intent gotoKeywordsModificationPage = new Intent(this, KeywordAddressModificationActivity.class);
+        startActivity(gotoKeywordsModificationPage);
+    }
+    // --- remove before release!
 }
