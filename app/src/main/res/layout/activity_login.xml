@@ -6,11 +6,28 @@
     android:layout_height="match_parent"
     tools:context=".LoginActivity">
 
+    <!--<TextView-->
+    <!--android:id="@+id/status"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="LoginActivity"-->
+    <!--tools:layout_editor_absoluteX="163dp"-->
+    <!--tools:layout_editor_absoluteY="227dp"-->
+    <!--android:clickable="true" />-->
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="LoginActivity"
-        tools:layout_editor_absoluteX="163dp"
-        tools:layout_editor_absoluteY="227dp" />
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/sign_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="visible"
+        tools:visibility="gone"
+        android:onClick="onClick" />
 </android.support.constraint.ConstraintLayout>
