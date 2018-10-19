@@ -1,47 +1,49 @@
 package com.example.youchengye.csci_310_project_mysmartusc;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.auth.api.Auth;
+import com.example.youchengye.csci_310_project_mysmartusc.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.common.SignInButton;
 
+/**
+ * Activity to demonstrate basic retrieval of the Google user's ID, email address, and basic
+ * profile.
+ */
 public class LoginActivity extends AppCompatActivity implements
         View.OnClickListener {
+
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
-    private GoogleApiClient mGoogleApiClient;
 
     private GoogleSignInClient mGoogleSignInClient;
     private TextView mStatusTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        UserInfo.getInstance().Initialize("Y");
 
         // Views
         mStatusTextView = findViewById(R.id.status);
 
         // Button listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);
+        findViewById(R.id.sign_out_button).setOnClickListener(this);
+        findViewById(R.id.disconnect_button).setOnClickListener(this);
 
         // [START configure_signin]
         // Configure sign-in to request the user's ID, email address, and basic
@@ -72,7 +74,7 @@ public class LoginActivity extends AppCompatActivity implements
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-//        updateUI(account);
+        updateUI(account);
         // [END on_start_sign_in]
     }
 
@@ -90,10 +92,12 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
     // [END onActivityResult]
+
+    // [START handleSignInResult]
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-            System.out.print(account);
+
             // Signed in successfully, show authenticated UI.
             updateUI(account);
         } catch (ApiException e) {
@@ -103,11 +107,14 @@ public class LoginActivity extends AppCompatActivity implements
             updateUI(null);
         }
     }
-    public void signIn() {
+    // [END handleSignInResult]
+
+    // [START signIn]
+    private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        mStatusTextView.setText("You have signed in");
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
+    // [END signIn]
 
     // [START signOut]
     private void signOut() {
@@ -141,32 +148,28 @@ public class LoginActivity extends AppCompatActivity implements
         if (account != null) {
             mStatusTextView.setText(getString(R.string.signed_in_fmt, account.getDisplayName()));
 
-//            findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-//            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
+            findViewById(R.id.sign_in_button).setVisibility(View.GONE);
+            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
         } else {
             mStatusTextView.setText(R.string.signed_out);
 
-//            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
-//            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
+            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
+            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
         }
     }
+
     @Override
     public void onClick(View v) {
-//        Log.w(TAG, "clicked");
-        System.out.print(v);
-
         switch (v.getId()) {
             case R.id.sign_in_button:
-                Log.w(TAG, "clicked");
-//                System.out.print("clicked");
                 signIn();
                 break;
-//            case R.id.sign_out_button:
-//                signOut();
-//                break;
-//            case R.id.disconnect_button:
-//                revokeAccess();
-//                break;
+            case R.id.sign_out_button:
+                signOut();
+                break;
+            case R.id.disconnect_button:
+                revokeAccess();
+                break;
         }
     }
 }
