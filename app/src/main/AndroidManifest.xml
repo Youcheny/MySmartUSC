@@ -17,6 +17,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".LoginActivity" />
+        <activity android:name=".Notification" >
+        </activity>>
         <activity android:name=".KeywordAddressModificationActivity"></activity>
 
     </application>

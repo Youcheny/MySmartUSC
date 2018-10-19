@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.util.Log;
 
 public class Notification extends AppCompatActivity {
 //    private final String CHANNEL_ID = "Star Mails";
@@ -35,7 +36,8 @@ public class Notification extends AppCompatActivity {
                 .setSmallIcon(R.drawable.ic_channel_icon)
                 .setContentTitle("Important Emails")
                 .setContentText("Email from: Ruoxi Jia")
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setVisibility(1);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.notify(NOTIFICATION_ID, builder.build());
 //        deleteNotificationChannel();
