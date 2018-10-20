@@ -14,10 +14,23 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 
 /**
  * Activity to demonstrate basic retrieval of the Google user's ID, email address, and basic
@@ -48,7 +61,12 @@ public class LoginActivity extends AppCompatActivity implements
         // [START configure_signin]
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+        String serverClientId = getString(R.string.server_client_id);
+//        Log.w(TAG, serverClientId);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestScopes(new Scope("https://mail.google.com/"))
+//                .requestIdToken(serverClientId)
+                .requestServerAuthCode(serverClientId)
                 .requestEmail()
                 .build();
         // [END configure_signin]
@@ -97,7 +115,46 @@ public class LoginActivity extends AppCompatActivity implements
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            String authCode = account.getServerAuthCode();
+//            String idToken = account.getIdToken();
+            String id = account.getId();
+            Log.w(TAG, "id: "+id);
+            EmailList.getInstance().setId(id);
+//            Log.w(TAG, "idToken: "+idToken);
+            Log.w(TAG, "authCode: "+authCode);
+            OkHttpClient client = new OkHttpClient();
+            RequestBody requestBody = new FormEncodingBuilder()
+                    .add("grant_type", "authorization_code")
+                    .add("client_id", getString(R.string.server_client_id))
+                    .add("client_secret", getString(R.string.client_secret))
+                    .add("redirect_uri","")
+                    .add("code", authCode)
+                    .build();
+            final Request request = new Request.Builder()
+                    .url("https://www.googleapis.com/oauth2/v4/token")
+                    .post(requestBody)
+                    .build();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(final Request request, final IOException e) {
+                    Log.e(TAG, e.toString());
+                }
 
+                @Override
+                public void onResponse(Response response) throws IOException {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body().string());
+                        final String message = jsonObject.toString(5);
+                        Log.i(TAG, message);
+                        final String access_token = jsonObject.getString("access_token");
+                        Log.i(TAG, "access_token: "+access_token);
+                        EmailList.getInstance().initialize(access_token);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+//            EmailList.getInstance().initialize(authCode);
             // Signed in successfully, show authenticated UI.
             updateUI(account);
         } catch (ApiException e) {
@@ -172,4 +229,5 @@ public class LoginActivity extends AppCompatActivity implements
                 break;
         }
     }
+
 }
