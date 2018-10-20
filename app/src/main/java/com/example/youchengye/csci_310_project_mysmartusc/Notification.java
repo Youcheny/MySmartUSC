@@ -3,6 +3,7 @@ package com.example.youchengye.csci_310_project_mysmartusc;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
+import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -11,9 +12,9 @@ import android.view.View;
 import android.widget.Button;
 
 public class Notification extends AppCompatActivity {
-//    private final String CHANNEL_ID = "Star Mails";
+    //    private final String CHANNEL_ID = "Star Mails";
     private final int NOTIFICATION_ID = 1;
-//    private NotificationManagerCompat notificationManager;
+    //    private NotificationManagerCompat notificationManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,8 +36,17 @@ public class Notification extends AppCompatActivity {
                 .setSmallIcon(R.drawable.ic_channel_icon)
                 .setContentTitle("Important Emails")
                 .setContentText("Email from: Ruoxi Jia")
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        PowerManager powerManager = (PowerManager) this.getSystemService(POWER_SERVICE);
+
+        if (!powerManager.isInteractive()){ // if screen is not already on, turn it on (get wake_lock for 10 seconds)
+            PowerManager.WakeLock wl = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK |PowerManager.ACQUIRE_CAUSES_WAKEUP |PowerManager.ON_AFTER_RELEASE,"MH24_SCREENLOCK");
+            wl.acquire(10000);
+            PowerManager.WakeLock wl_cpu = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"MH24_SCREENLOCK");
+            wl_cpu.acquire(10000);
+        }
         notificationManager.notify(NOTIFICATION_ID, builder.build());
 //        deleteNotificationChannel();
     }
