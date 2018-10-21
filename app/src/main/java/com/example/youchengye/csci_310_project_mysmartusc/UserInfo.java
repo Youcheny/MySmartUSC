@@ -19,6 +19,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
+import org.w3c.dom.Document;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -86,28 +88,25 @@ public class UserInfo {
         contentWhiteListChanged = false;
         contentStarListChanged = false;
         importantEmailAddressListChanged = false;
-        CollectionReference usersRef = firestore.collection("Users");
         // retrieve and initialize all the lists in UserData Object
-        usersRef.whereEqualTo("username", username)
+        DocumentReference userRef = firestore.collection("Users").document(username);
+        userRef
             .get()
-            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            HashMap<String, Object> databaseUserInfoRetrieval = (HashMap<String, Object>)document.getData();
-                            UserInfo.getInstance().setTitleBlackList((ArrayList<String>) databaseUserInfoRetrieval.get("titleBlackList"));
-                            UserInfo.getInstance().setTitleWhiteList((ArrayList<String>) databaseUserInfoRetrieval.get("titleWhiteList"));
-                            UserInfo.getInstance().setTitleStarList((ArrayList<String>) databaseUserInfoRetrieval.get("titleStarList"));
-                            UserInfo.getInstance().setContentBlackList((ArrayList<String>) databaseUserInfoRetrieval.get("contentBlackList"));
-                            UserInfo.getInstance().setContentWhiteList((ArrayList<String>) databaseUserInfoRetrieval.get("contentWhiteList"));
-                            UserInfo.getInstance().setContentStarList((ArrayList<String>) databaseUserInfoRetrieval.get("contentStarList"));
-                            UserInfo.getInstance().setImportantEmailAddressList((ArrayList<String>) databaseUserInfoRetrieval.get("importantEmailAddressList"));
-                            Log.d(TAG, document.getId() + " => " + document.getData());
-                            // information has been retrieved from database
-                        }
-                    } else {
-                        Log.d(TAG, "Error getting documents: ", task.getException());
+                        DocumentSnapshot document = task.getResult();
+                        HashMap<String, Object> databaseUserInfoRetrieval = (HashMap<String, Object>)document.getData();
+                        UserInfo.getInstance().setTitleBlackList((ArrayList<String>) databaseUserInfoRetrieval.get("titleBlackList"));
+                        UserInfo.getInstance().setTitleWhiteList((ArrayList<String>) databaseUserInfoRetrieval.get("titleWhiteList"));
+                        UserInfo.getInstance().setTitleStarList((ArrayList<String>) databaseUserInfoRetrieval.get("titleStarList"));
+                        UserInfo.getInstance().setContentBlackList((ArrayList<String>) databaseUserInfoRetrieval.get("contentBlackList"));
+                        UserInfo.getInstance().setContentWhiteList((ArrayList<String>) databaseUserInfoRetrieval.get("contentWhiteList"));
+                        UserInfo.getInstance().setContentStarList((ArrayList<String>) databaseUserInfoRetrieval.get("contentStarList"));
+                        UserInfo.getInstance().setImportantEmailAddressList((ArrayList<String>) databaseUserInfoRetrieval.get("importantEmailAddressList"));
+                        Log.d(TAG, document.getId() + " => " + document.getData());
+                        // information has been retrieved from database
                     }
                 }
             });
@@ -218,23 +217,32 @@ public class UserInfo {
             changes.put("titleBlackList", FieldValue.delete());
             changes.put("titleBlackList", titleBlackList);
         }
-
         if (titleWhiteListChanged) {
             changes.put("titleWhiteList", FieldValue.delete());
             changes.put("titleWhiteList", titleWhiteList);
         }
-
-        if (titleStarListChanged)
+        if (titleStarListChanged) {
+            changes.put("titleStarList", FieldValue.delete());
             changes.put("titleStarList", titleStarList);
-        if (contentBlackListChanged)
+        }
+        if (contentBlackListChanged) {
+            changes.put("contentBlackList", FieldValue.delete());
             changes.put("contentBlackList", contentBlackList);
-        if (contentWhiteListChanged)
+        }
+        if (contentWhiteListChanged) {
+            changes.put("contentWhiteList", FieldValue.delete());
             changes.put("contentWhiteList", contentWhiteList);
-        if (contentStarListChanged)
+        }
+        if (contentStarListChanged) {
+            changes.put("contentStarList", FieldValue.delete());
             changes.put("contentStarList", contentStarList);
-        if (importantEmailAddressListChanged)
+        }
+        if (importantEmailAddressListChanged) {
+            changes.put("importantEmailAddessList", FieldValue.delete());
             changes.put("importantEmailAddessList", importantEmailAddressList);
-        FirebaseFirestore.getInstance().collection("Users").document(username).set(changes, SetOptions.merge());
+        }
+        DocumentReference userRef = FirebaseFirestore.getInstance().collection("Users").document(username);
+        userRef.set(changes, SetOptions.merge());
     }
 
 }
