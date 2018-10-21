@@ -11,6 +11,7 @@ import com.google.api.services.gmail.model.Message;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -49,8 +50,9 @@ public class EmailList {
                 .setApplicationName("MySmartUSC").build();
 
         try {
-            List<Header> headers = EmailList.getInstance().listMessages();
-            for(Header header: headers){
+            HashMap<String,Header> headers = EmailList.getInstance().listMessages();
+            for(String key:headers.keySet()){
+                Header header = headers.get(key);
                 Log.i(TAG, "subject: "+header.subject);
                 Log.i(TAG, "from: "+header.from);
                 Log.i(TAG, "snippet: "+header.snippet);
@@ -100,17 +102,16 @@ public class EmailList {
         return email;
     }
 
-    public List<Header> listMessages() throws IOException, MessagingException {
+    public HashMap<String, Header> listMessages() throws IOException, MessagingException {
 
         ListMessagesResponse response = singleInstance.service.users().messages().list(singleInstance.userId).setMaxResults((long) 8).execute();
-
         List<Message> messages = new ArrayList<>();
 
         if (response.getMessages() != null) {
             messages.addAll(response.getMessages());
         }
 
-        ArrayList<Header> headers = new ArrayList<>();
+        HashMap<String, Header> headers = new HashMap<>();
         for (int i = 0; i < 8; i++) {
             String messageId = messages.get(i).getId();
             Message message = getMessage(messageId);
@@ -133,7 +134,8 @@ public class EmailList {
                     subject = message.getPayload().getHeaders().get(j).getValue();
                 }
             }
-            headers.add(new Header(from, subject, snippet, messageId,content));
+            Header header = new Header(from, subject, snippet, messageId,content);
+            headers.put(messageId,header);
         }
 
         return headers;
@@ -156,8 +158,6 @@ public class EmailList {
             throw new MessagingException("Multipart with no body parts not supported.");
         boolean multipartAlt = new ContentType(mimeMultipart.getContentType()).match("multipart/alternative");
         if (multipartAlt)
-            // alternatives appear in an order of increasing
-            // faithfulness to the original content. Customize as req'd.
             return getTextFromBodyPart(mimeMultipart.getBodyPart(count - 1));
         String result = "";
         for (int i = 0; i < count; i++) {
