@@ -20,4 +20,9 @@
         <item name="colorButtonNormal">@color/blue_grey_500</item>
         <item name="android:textColor">@android:color/white</item>
     </style>
+
+    <style name="AppTheme.Button" parent="Widget.AppCompat.Button.Borderless.Colored">
+        <item name="colorButtonNormal">@color/cardinal</item>
+        <item name="android:textColor">@color/gold</item>
+    </style>
 </resources>

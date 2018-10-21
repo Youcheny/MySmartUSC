@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    //color for main
+    <color name="cardinal">#92260F</color>
+    <color name="gold">#FFDF00</color>
+
     //color for sign in
     <color name="blue_grey_500">#607D8B</color>
     <color name="blue_grey_600">#546E7A</color>
