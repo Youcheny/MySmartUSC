@@ -19,6 +19,7 @@ android {
 
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
+        pickFirst 'META-INF/LICENSE.txt'
     }
 }
 
@@ -34,6 +35,9 @@ dependencies {
     // for firebase
     implementation 'com.google.android.gms:play-services-auth:15.0.1'
     implementation 'com.google.apis:google-api-services-gmail:v1-rev96-1.25.0'
+    implementation'com.sun.mail:android-mail:1.6.2'
+    implementation 'com.sun.mail:android-activation:1.6.2'
+    implementation 'org.jsoup:jsoup:1.11.3'
 }
 
 apply plugin: 'com.google.gms.google-services' // for firebase

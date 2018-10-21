@@ -1,29 +1,30 @@
 package com.example.youchengye.csci_310_project_mysmartusc;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.Message;
 
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
+import javax.mail.BodyPart;
+import javax.mail.MessagingException;
+import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
+
+import java.io.ByteArrayInputStream;
+
+import javax.mail.Session;
+import javax.mail.internet.ContentType;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import org.jsoup.Jsoup;
 public class EmailList {
     private static final String TAG = "EmailList";
     private GoogleCredential credential;
@@ -39,19 +40,14 @@ public class EmailList {
         this.userId = "me";
     }
 
-    public List<Header> initialize(String accessToken){
+    public void initialize(String accessToken) throws IOException, MessagingException {
 //        singleInstance = new EmailList();
         this.accessToken = accessToken;
-        Log.w(TAG, "accessToken: "+accessToken);
         this.credential = new GoogleCredential().setAccessToken(accessToken);
 
         this.service = new Gmail.Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance(), credential)
                 .setApplicationName("MySmartUSC").build();
 
-        // EXAMPLE OF EMAILLIST
-        // There are 2 problems need to be fixed
-        // 1. snippet is shortened content
-        // 2. from includes name and email and email address
         try {
             List<Header> headers = EmailList.getInstance().listMessages();
             for(Header header: headers){
@@ -59,12 +55,13 @@ public class EmailList {
                 Log.i(TAG, "from: "+header.from);
                 Log.i(TAG, "snippet: "+header.snippet);
                 Log.i(TAG, "messageId: "+header.messageId);
+                Log.i(TAG, "content: "+header.content);
             }
-            return headers;
+//            return headers;
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+//        return null;
     }
 
     public void setId(String id){
@@ -85,20 +82,25 @@ public class EmailList {
         List<String> metadataHeaders = new ArrayList<>();
         metadataHeaders.add("From");
         metadataHeaders.add("Subject");
-//		Message message = service.users().messages().get(userId, messageId).setFormat("metadata").setMetadataHeaders(metadataHeaders).execute();
-        Message message = singleInstance.service.users().messages().get(singleInstance.userId, messageId).execute(); //SHOULD BE singleInstance.service.users().messages().get(singleInstance.userId, messageId).setFormat("raw").execute();
-		if (message == null) {
-			System.out.println("null message");
-		}
-		else {
-			System.out.println("not null message");
-			System.out.println(message.toPrettyString());
-		}
-		System.out.println("Message snippet: " + message.getSnippet());
+        Message message = singleInstance.service.users().messages().get(singleInstance.userId, messageId).execute();
         return message;
     }
 
-    public List<Header> listMessages() throws IOException {
+    private MimeMessage getMimeMessage(String messageId)
+            throws IOException, MessagingException {
+        Message message = singleInstance.service.users().messages().get(userId, messageId).setFormat("raw").execute();
+
+        Base64 base64Url = new Base64(true);
+        byte[] emailBytes = base64Url.decodeBase64(message.getRaw());
+
+        Properties props = new Properties();
+        Session session = Session.getDefaultInstance(props, null);
+        MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
+
+        return email;
+    }
+
+    public List<Header> listMessages() throws IOException, MessagingException {
 
         ListMessagesResponse response = singleInstance.service.users().messages().list(singleInstance.userId).setMaxResults((long) 8).execute();
 
@@ -107,46 +109,74 @@ public class EmailList {
         if (response.getMessages() != null) {
             messages.addAll(response.getMessages());
         }
-		for (Message message : messages) {
-			System.out.println(message.toPrettyString());
-		}
 
         ArrayList<Header> headers = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
             String messageId = messages.get(i).getId();
-//			System.out.println(messageId);
             Message message = getMessage(messageId);
-//			Message message = getMessage(messageId);
+
+            MimeMessage mimeMessage = getMimeMessage(messageId);
+            String content = getTextFromMessage(mimeMessage);
+
             int size = message.getPayload().getHeaders().size();
-//			System.out.println("size " + size);
             String from = null;
             String subject = null;
-//			String snippet = null;
             String snippet = message.getSnippet();
-//            if (snippet.length() > 50) {
-//                snippet = (snippet.substring(0, 45) + "...");
-//            }
+
             for (int j = 0; j < size; j++) {
                 String temp = message.getPayload().getHeaders().get(j).getName();
                 if (temp.equals("From")) {
                     from = message.getPayload().getHeaders().get(j).getValue();
-//                    int start = from.indexOf('<');
-//                    int end = from.indexOf('>');
-//                    Log.i(TAG, ""+start+" "+end);
-//                    from = from.substring(start+1, end-start-1);
-                    //WHEN I do the things above there is an error
+
                 }
                 else if (temp.equals("Subject")) {
                     subject = message.getPayload().getHeaders().get(j).getValue();
-//                    if (subject.length() > 35) {
-//                        subject = (subject.substring(0, 30) + "...");
-//                    }
                 }
             }
-            headers.add(new Header(from, subject, snippet, messageId));
-//			System.out.println("message index " + i + " from " + from + " subject " + subject + " snippet " + snippet);
+            headers.add(new Header(from, subject, snippet, messageId,content));
         }
 
         return headers;
+    }
+
+    private String getTextFromMessage(MimeMessage message) throws IOException, MessagingException {
+        String result = "";
+        if (message.isMimeType("text/plain")) {
+            result = message.getContent().toString();
+        } else if (message.isMimeType("multipart/*")) {
+            MimeMultipart mimeMultipart = (MimeMultipart) message.getContent();
+            result = getTextFromMimeMultipart(mimeMultipart);
+        }
+        return result;
+    }
+
+    private String getTextFromMimeMultipart(MimeMultipart mimeMultipart) throws IOException, MessagingException {
+        int count = mimeMultipart.getCount();
+        if (count == 0)
+            throw new MessagingException("Multipart with no body parts not supported.");
+        boolean multipartAlt = new ContentType(mimeMultipart.getContentType()).match("multipart/alternative");
+        if (multipartAlt)
+            // alternatives appear in an order of increasing
+            // faithfulness to the original content. Customize as req'd.
+            return getTextFromBodyPart(mimeMultipart.getBodyPart(count - 1));
+        String result = "";
+        for (int i = 0; i < count; i++) {
+            BodyPart bodyPart = mimeMultipart.getBodyPart(i);
+            result += getTextFromBodyPart(bodyPart);
+        }
+        return result;
+    }
+
+    private String getTextFromBodyPart(BodyPart bodyPart) throws IOException, MessagingException {
+        String result = "";
+        if (bodyPart.isMimeType("text/plain")) {
+            result = (String) bodyPart.getContent();
+        } else if (bodyPart.isMimeType("text/html")) {
+            String html = (String) bodyPart.getContent();
+            result = org.jsoup.Jsoup.parse(html).text();
+        } else if (bodyPart.getContent() instanceof MimeMultipart){
+            result = getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
+        }
+        return result;
     }
 }

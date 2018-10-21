@@ -41,6 +41,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 /**
  * Activity to demonstrate basic retrieval of the Google user's ID, email address, and basic
  * profile.
@@ -155,17 +157,19 @@ public class LoginActivity extends AppCompatActivity implements
                     try {
                         JSONObject jsonObject = new JSONObject(response.body().string());
                         final String message = jsonObject.toString(5);
-                        Log.i(TAG, message);
+//                        Log.i(TAG, message);
                         final String access_token = jsonObject.getString("access_token");
-                        Log.i(TAG, "access_token: "+access_token);
-
-                        createNotification(EmailList.getInstance().initialize(access_token));
+//                        Log.i(TAG, "access_token: "+access_token);
+                        EmailList.getInstance().initialize(access_token);
+                        List<Header> headers = new ArrayList<Header>();
+                        createNotification(headers);
                     } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (MessagingException e) {
                         e.printStackTrace();
                     }
                 }
             });
-//            EmailList.getInstance().initialize(authCode);
             // Signed in successfully, show authenticated UI.
             updateUI(account);
         } catch (ApiException e) {
@@ -240,11 +244,11 @@ public class LoginActivity extends AppCompatActivity implements
                 break;
         }
     }
+
     public void createNotification(List<Header> headers){
-        createNotificationChannel();
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.channel_id))
                 .setSmallIcon(R.drawable.ic_channel_icon)
-                .setContentTitle("Important Emails")
+                .setContentTitle("Important Emails from MySmartUSC")
                 .setContentText("Email from: Ruoxi Jia")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
@@ -263,23 +267,8 @@ public class LoginActivity extends AppCompatActivity implements
         if (importantEmails!=null) {
             notificationManager.notify(NOTIFICATION_ID, builder.build());
         }
-//        deleteNotificationChannel();
     }
-    private void createNotificationChannel(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            String name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            NotificationChannel channel = new NotificationChannel(
-                    getString(R.string.channel_id),
-                    name,
-                    NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription(description);
 
-            //Register the channel with the system
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
 
     private void deleteNotificationChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
