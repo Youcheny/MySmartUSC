@@ -42,28 +42,23 @@ public class EmailList {
     }
 
     public void initialize(String accessToken) throws IOException, MessagingException {
-//        singleInstance = new EmailList();
         this.accessToken = accessToken;
         this.credential = new GoogleCredential().setAccessToken(accessToken);
-
         this.service = new Gmail.Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance(), credential)
                 .setApplicationName("MySmartUSC").build();
 
         try {
-            HashMap<String,Header> headers = EmailList.getInstance().listMessages();
-            for(String key:headers.keySet()){
-                Header header = headers.get(key);
+            List<Header> headers = EmailList.getInstance().listMessages();
+            for(Header header:headers){
                 Log.i(TAG, "subject: "+header.subject);
                 Log.i(TAG, "from: "+header.from);
                 Log.i(TAG, "snippet: "+header.snippet);
                 Log.i(TAG, "messageId: "+header.messageId);
                 Log.i(TAG, "content: "+header.content);
             }
-//            return headers;
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        return null;
     }
 
     public void setId(String id){
@@ -80,29 +75,15 @@ public class EmailList {
         }
     }
 
-    public Message getMessage(String messageId) throws IOException {
-        List<String> metadataHeaders = new ArrayList<>();
-        metadataHeaders.add("From");
-        metadataHeaders.add("Subject");
-        Message message = singleInstance.service.users().messages().get(singleInstance.userId, messageId).execute();
-        return message;
-    }
 
-    private MimeMessage getMimeMessage(String messageId)
-            throws IOException, MessagingException {
-        Message message = singleInstance.service.users().messages().get(userId, messageId).setFormat("raw").execute();
-
-        Base64 base64Url = new Base64(true);
-        byte[] emailBytes = base64Url.decodeBase64(message.getRaw());
-
-        Properties props = new Properties();
-        Session session = Session.getDefaultInstance(props, null);
-        MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
-
-        return email;
-    }
-
-    public HashMap<String, Header> listMessages() throws IOException, MessagingException {
+    /**
+     * get 8 newest emails
+     * @return a hashmap of messageId and header
+     * header includes from subject messageId content and snippet
+     * @throws IOException throw ioexception
+     * @throws MessagingException throw messageexception
+     */
+    public List<Header> listMessages() throws IOException, MessagingException {
 
         ListMessagesResponse response = singleInstance.service.users().messages().list(singleInstance.userId).setMaxResults((long) 8).execute();
         List<Message> messages = new ArrayList<>();
@@ -111,7 +92,7 @@ public class EmailList {
             messages.addAll(response.getMessages());
         }
 
-        HashMap<String, Header> headers = new HashMap<>();
+        List<Header> headers = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
             String messageId = messages.get(i).getId();
             Message message = getMessage(messageId);
@@ -128,17 +109,43 @@ public class EmailList {
                 String temp = message.getPayload().getHeaders().get(j).getName();
                 if (temp.equals("From")) {
                     from = message.getPayload().getHeaders().get(j).getValue();
-
                 }
                 else if (temp.equals("Subject")) {
                     subject = message.getPayload().getHeaders().get(j).getValue();
                 }
             }
-            Header header = new Header(from, subject, snippet, messageId,content);
-            headers.put(messageId,header);
+            headers.add( new Header(from, subject, snippet, messageId,content));
         }
 
         return headers;
+    }
+
+    /**
+     * function called by listEmails to get each email according to messageId
+     * @param messageId id of each message
+     * @return a email message
+     * @throws IOException
+     */
+    public Message getMessage(String messageId) throws IOException {
+        List<String> metadataHeaders = new ArrayList<>();
+        metadataHeaders.add("From");
+        metadataHeaders.add("Subject");
+        Message message = singleInstance.service.users().messages().get(singleInstance.userId, messageId).execute();
+        return message;
+    }
+
+
+    private MimeMessage getMimeMessage(String messageId)
+            throws IOException, MessagingException {
+        Message message = singleInstance.service.users().messages().get(userId, messageId).setFormat("raw").execute();
+        //parse the return message
+        Base64 base64Url = new Base64(true);
+        byte[] emailBytes = base64Url.decodeBase64(message.getRaw());
+
+        Properties props = new Properties();
+        Session session = Session.getDefaultInstance(props, null);
+        MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
+        return email;
     }
 
     private String getTextFromMessage(MimeMessage message) throws IOException, MessagingException {

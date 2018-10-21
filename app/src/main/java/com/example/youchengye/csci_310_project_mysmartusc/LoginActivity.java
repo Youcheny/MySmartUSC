@@ -38,6 +38,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -70,9 +71,7 @@ public class LoginActivity extends AppCompatActivity implements
         findViewById(R.id.sign_out_button).setOnClickListener(this);
         findViewById(R.id.disconnect_button).setOnClickListener(this);
 
-        // [START configure_signin]
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
+
         String serverClientId = getString(R.string.server_client_id);
 //        Log.w(TAG, serverClientId);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -161,7 +160,7 @@ public class LoginActivity extends AppCompatActivity implements
                         final String access_token = jsonObject.getString("access_token");
 //                        Log.i(TAG, "access_token: "+access_token);
                         EmailList.getInstance().initialize(access_token);
-                        List<Header> headers = new ArrayList<Header>();
+                        List<Header> headers = EmailList.getInstance().listMessages();
                         createNotification(headers);
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -246,30 +245,34 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     public void createNotification(List<Header> headers){
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.channel_id))
-                .setSmallIcon(R.drawable.ic_channel_icon)
-                .setContentTitle("Important Emails from MySmartUSC")
-                .setContentText("Email from: Ruoxi Jia")
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        PowerManager powerManager = (PowerManager) this.getSystemService(POWER_SERVICE);
-
-        if (!powerManager.isInteractive()){ // if screen is not already on, turn it on (get wake_lock for 10 seconds)
-            PowerManager.WakeLock wl = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK |PowerManager.ACQUIRE_CAUSES_WAKEUP |PowerManager.ON_AFTER_RELEASE,"MH24_SCREENLOCK");
-            wl.acquire(10000);
-            PowerManager.WakeLock wl_cpu = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"MH24_SCREENLOCK");
-            wl_cpu.acquire(10000);
-        }
         HashSet<String> keywords = new HashSet<>();
-        keywords.add("from");
+        keywords.add("Alert");
         List<Header> importantEmails = checkEmail(headers, keywords);
-        if (importantEmails!=null) {
+        if (importantEmails!=null && importantEmails.size()!=0) {
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.channel_id))
+                    .setSmallIcon(R.drawable.ic_channel_icon)
+                    .setContentTitle("Important Emails")
+                    .setContentText(createContentText(importantEmails.get(0)))
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+            PowerManager powerManager = (PowerManager) this.getSystemService(POWER_SERVICE);
+
+            if (!powerManager.isInteractive()){ // if screen is not already on, turn it on (get wake_lock for 10 seconds)
+                PowerManager.WakeLock wl = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK |PowerManager.ACQUIRE_CAUSES_WAKEUP |PowerManager.ON_AFTER_RELEASE,"MH24_SCREENLOCK");
+                wl.acquire(10000);
+                PowerManager.WakeLock wl_cpu = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"MH24_SCREENLOCK");
+                wl_cpu.acquire(10000);
+            }
+
             notificationManager.notify(NOTIFICATION_ID, builder.build());
         }
     }
 
-
+    private String createContentText(Header header){
+        String contentText = "From "+ header.from + ": "+header.snippet;
+        return contentText;
+    }
     private void deleteNotificationChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
@@ -281,7 +284,9 @@ public class LoginActivity extends AppCompatActivity implements
         List<Header> importantEmails = new ArrayList<>();
         for (Header h:headers){
             for (String keyword:keywords){
-                if (h.from.contains(keyword) || h.subject.contains(keyword) || h.snippet.contains(keyword)){
+                keyword = keyword.toLowerCase();
+                if (h.from.toLowerCase().contains(keyword) || h.subject.toLowerCase().contains(keyword)
+                        || h.snippet.toLowerCase().contains(keyword) || h.content.toLowerCase().contains(keyword)){
                     importantEmails.add(h);
                 }
             }
