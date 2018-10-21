@@ -1,9 +1,15 @@
 package com.example.youchengye.csci_310_project_mysmartusc;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -31,6 +37,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Activity to demonstrate basic retrieval of the Google user's ID, email address, and basic
@@ -41,6 +50,7 @@ public class LoginActivity extends AppCompatActivity implements
 
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
+    private final int NOTIFICATION_ID = 1;
 
     private GoogleSignInClient mGoogleSignInClient;
     private TextView mStatusTextView;
@@ -148,7 +158,8 @@ public class LoginActivity extends AppCompatActivity implements
                         Log.i(TAG, message);
                         final String access_token = jsonObject.getString("access_token");
                         Log.i(TAG, "access_token: "+access_token);
-                        EmailList.getInstance().initialize(access_token);
+
+                        createNotification(EmailList.getInstance().initialize(access_token));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -228,6 +239,65 @@ public class LoginActivity extends AppCompatActivity implements
                 revokeAccess();
                 break;
         }
+    }
+    public void createNotification(List<Header> headers){
+        createNotificationChannel();
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.channel_id))
+                .setSmallIcon(R.drawable.ic_channel_icon)
+                .setContentTitle("Important Emails")
+                .setContentText("Email from: Ruoxi Jia")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        PowerManager powerManager = (PowerManager) this.getSystemService(POWER_SERVICE);
+
+        if (!powerManager.isInteractive()){ // if screen is not already on, turn it on (get wake_lock for 10 seconds)
+            PowerManager.WakeLock wl = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK |PowerManager.ACQUIRE_CAUSES_WAKEUP |PowerManager.ON_AFTER_RELEASE,"MH24_SCREENLOCK");
+            wl.acquire(10000);
+            PowerManager.WakeLock wl_cpu = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"MH24_SCREENLOCK");
+            wl_cpu.acquire(10000);
+        }
+        HashSet<String> keywords = new HashSet<>();
+        keywords.add("from");
+        List<Header> importantEmails = checkEmail(headers, keywords);
+        if (importantEmails!=null) {
+            notificationManager.notify(NOTIFICATION_ID, builder.build());
+        }
+//        deleteNotificationChannel();
+    }
+    private void createNotificationChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            String name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            NotificationChannel channel = new NotificationChannel(
+                    getString(R.string.channel_id),
+                    name,
+                    NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription(description);
+
+            //Register the channel with the system
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    private void deleteNotificationChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.deleteNotificationChannel(getString(R.string.channel_id));
+        }
+    }
+
+    private List<Header> checkEmail(List<Header> headers, HashSet<String> keywords){
+        List<Header> importantEmails = new ArrayList<>();
+        for (Header h:headers){
+            for (String keyword:keywords){
+                if (h.from.contains(keyword) || h.subject.contains(keyword) || h.snippet.contains(keyword)){
+                    importantEmails.add(h);
+                }
+            }
+        }
+        return importantEmails;
     }
 
 }

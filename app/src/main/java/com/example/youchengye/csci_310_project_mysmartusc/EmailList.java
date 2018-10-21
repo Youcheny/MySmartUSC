@@ -39,7 +39,7 @@ public class EmailList {
         this.userId = "me";
     }
 
-    public void initialize(String accessToken){
+    public List<Header> initialize(String accessToken){
 //        singleInstance = new EmailList();
         this.accessToken = accessToken;
         Log.w(TAG, "accessToken: "+accessToken);
@@ -60,9 +60,11 @@ public class EmailList {
                 Log.i(TAG, "snippet: "+header.snippet);
                 Log.i(TAG, "messageId: "+header.messageId);
             }
+            return headers;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public void setId(String id){
