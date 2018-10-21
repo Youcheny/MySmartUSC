@@ -1,18 +1,134 @@
 package com.example.youchengye.csci_310_project_mysmartusc;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.graphics.Color;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextSwitcher;
+import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class KeywordAddressModificationActivity extends AppCompatActivity {
 
     private static Integer currentListID;
+
+    // Called when a new list item is selected
+    private class OnListSelected implements AdapterView.OnItemSelectedListener {
+        public void onItemSelected(AdapterView<?> adapterView, View view, int listIndex, long l) {
+            KeywordAddressModificationActivity.currentListID = listIndex;
+            updateList(false); // initially not in modification state
+            Button modifyListButton = (Button)findViewById((R.id.modifyList));
+            modifyListButton.setText("Modify List");
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+            // Nothing to do
+        }
+    }
+
+    private class OnDeleteWordRowListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            AlertDialog alertDialog = new AlertDialog.Builder(KeywordAddressModificationActivity.this).create();
+
+            // Set Custom Title
+            TextView title = new TextView(KeywordAddressModificationActivity.this);
+            // Title Properties
+            title.setText("Confirm Deletion");
+            title.setPadding(10, 10, 10, 10);   // Set Position
+            title.setGravity(Gravity.CENTER);
+            title.setTextColor(Color.BLACK);
+            title.setTextSize(20);
+            alertDialog.setCustomTitle(title);
+
+            // Set Message
+            TextView msg = new TextView(KeywordAddressModificationActivity.this);
+            // Message Properties
+            String keyword = ((TextView)view).getText().toString();
+            keyword = keyword.substring(0, keyword.length() - 18);
+            msg.setText("Are you sure you want to delete keyword " + keyword + "?");
+            msg.setGravity(Gravity.CENTER_HORIZONTAL);
+            msg.setTextColor(Color.BLACK);
+            alertDialog.setView(msg);
+
+            // Set Button
+            // you can more buttons
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL,"YES! REMOVE IT FOR ME", new OnConfirmDeleteListener(keyword));
+
+            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,"NO! KEEP IT", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // Nothing to do
+                }
+            });
+
+            new Dialog(getApplicationContext());
+            alertDialog.show();
+
+            // Set Properties for OK Button
+            final Button okBT = alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL);
+            LinearLayout.LayoutParams neutralBtnLP = (LinearLayout.LayoutParams) okBT.getLayoutParams();
+            neutralBtnLP.gravity = Gravity.FILL_HORIZONTAL;
+            okBT.setPadding(50, 10, 10, 10);   // Set Position
+            okBT.setTextColor(Color.BLUE);
+            okBT.setLayoutParams(neutralBtnLP);
+
+            final Button cancelBT = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+            LinearLayout.LayoutParams negBtnLP = (LinearLayout.LayoutParams) okBT.getLayoutParams();
+            negBtnLP.gravity = Gravity.FILL_HORIZONTAL;
+            cancelBT.setTextColor(Color.RED);
+            cancelBT.setLayoutParams(negBtnLP);
+        }
+
+        private class OnConfirmDeleteListener implements DialogInterface.OnClickListener {
+            String keyword;
+            public OnConfirmDeleteListener(String keyword) {
+                this.keyword = keyword;
+            }
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (currentListID) {
+                    case 0:
+                        UserInfo.getInstance().removeTitleBlackList(keyword);
+                        break;
+                    case 1:
+                        UserInfo.getInstance().removeTitleWhiteList(keyword);
+                        break;
+                    case 2:
+                        UserInfo.getInstance().removeTitleStarList(keyword);
+                        break;
+                    case 3:
+                        UserInfo.getInstance().removeContentBlackList(keyword);
+                        break;
+                    case 4:
+                        UserInfo.getInstance().removeContentWhiteList(keyword);
+                        break;
+                    case 5:
+                        UserInfo.getInstance().removeContentStarList(keyword);
+                        break;
+                    case 6:
+                        UserInfo.getInstance().removeImportantEmailAddressList(keyword);
+                        break;
+                }
+                KeywordAddressModificationActivity.this.updateList(true);
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,6 +138,7 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
         currentListID = 0;
         // wait while the list values are retrieved from the database
         UserInfo.getInstance().Initialize("youcheny"); // "youcheny" to be changed later
+
 
 //        ListView mainListView = (ListView) findViewById( R.id.here );
 //
@@ -48,7 +165,7 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
 
     }
 
-    protected void populateSpinnerValues() {
+    private void populateSpinnerValues() {
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
         // Create an ArrayAdapter using the string array and a default spinner layout
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -57,26 +174,73 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
+        // Set OnItemSelectedListener
+        spinner.setOnItemSelectedListener(new OnListSelected());
     }
 
-    protected void updateList() {
+    private void updateList(boolean clickToRemove) {
         switch (currentListID) {
             case 0:
-                updateList(UserInfo.getInstance().getTitleBlackList());
+                updateList(UserInfo.getInstance().getTitleBlackList(), clickToRemove);
+                break;
+            case 1:
+                updateList(UserInfo.getInstance().getTitleWhiteList(), clickToRemove);
+                break;
+            case 2:
+                updateList(UserInfo.getInstance().getTitleStarList(), clickToRemove);
+                break;
+            case 3:
+                updateList(UserInfo.getInstance().getContentBlackList(), clickToRemove);
+                break;
+            case 4:
+                updateList(UserInfo.getInstance().getContentWhiteList(), clickToRemove);
+                break;
+            case 5:
+                updateList(UserInfo.getInstance().getContentStarList(), clickToRemove);
+                break;
+            case 6:
+                updateList(UserInfo.getInstance().getImportantEmailAddressList(), clickToRemove);
+                break;
         }
     }
 
-    protected void updateList(List<String> updatedList) {
+    private void updateList(List<String> updatedList, boolean clickToRemove) {
         ListView currentListView = (ListView)findViewById(R.id.currlist);
+        updatedList = new ArrayList<String>((ArrayList<String>) updatedList); // make a deep copy to prevent modifying the list in UserInfo
+        if (clickToRemove) {
+            currentListView.setOnItemClickListener(new OnDeleteWordRowListener());
+            for (int i = 0; i < updatedList.size(); ++i)
+                updatedList.set(i, updatedList.get(i) + " - click to remove");
+        }
         ArrayAdapter<String> currListAdapter = new ArrayAdapter<String>(this, R.layout.single_word_row, updatedList);
         currentListView.setAdapter(currListAdapter);
     }
 
     public void onClickShowList(View view) {
-        updateList();
+        updateList(false);
+        Button modifyListButton = (Button)findViewById((R.id.modifyList));
+        modifyListButton.setText("Modify List");
     }
 
     public void onClickModifyList(View view) {
+        ListView currentListView = (ListView)findViewById(R.id.currlist);
+
+        if (((Button)view).getText().equals("Modify List")) {
+            // Modifying list
+            ((Button)view).setText("Done!");
+            updateList(true);
+        }
+        else {
+            // Done Modifying list
+            // Write to Database
+            UserInfo.getInstance().writeToDatabase();
+            ((Button)view).setText("Modify List");
+            updateList(false);
+        }
 
     }
+
+
+
+
 }
