@@ -218,7 +218,7 @@ public class UserInfo {
     public boolean checkContentWhiteList(String keyword) {return contentWhiteSet.contains(keyword);}
     public boolean checkContentStarList(String keyword) {return contentStarSet.contains(keyword);}
     public boolean checkImportantEmailAddressList(String keyword) {return importantEmailAddressSet.contains(keyword);}
-    
+
     // Write to database
     public void writeToDatabase() {
         Map<String, Object> changes = new HashMap<String, Object>();

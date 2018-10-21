@@ -66,5 +66,7 @@
     <string name = "channel_description">Push important app message to users</string>
     <string name="channel_id">Important Mails</string>
 
+    <!-- newly defined ids -->
+    <item name="new_keyword_edit_text" type="id"/>
 
 </resources>

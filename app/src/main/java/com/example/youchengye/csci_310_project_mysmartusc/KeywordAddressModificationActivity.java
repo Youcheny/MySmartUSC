@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -129,6 +130,41 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
         }
     }
 
+    private class OnKeywordAddedListener implements DialogInterface.OnClickListener {
+        EditText newKeywordTextBox;
+        public OnKeywordAddedListener(EditText nktb) {
+            newKeywordTextBox = nktb;
+        }
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            String keyword = newKeywordTextBox.getText().toString();
+            switch (currentListID) {
+                case 0:
+                    UserInfo.getInstance().addTitleBlackList(keyword);
+                    break;
+                case 1:
+                    UserInfo.getInstance().addTitleWhiteList(keyword);
+                    break;
+                case 2:
+                    UserInfo.getInstance().addTitleStarList(keyword);
+                    break;
+                case 3:
+                    UserInfo.getInstance().addContentBlackList(keyword);
+                    break;
+                case 4:
+                    UserInfo.getInstance().addContentWhiteList(keyword);
+                    break;
+                case 5:
+                    UserInfo.getInstance().addContentStarList(keyword);
+                    break;
+                case 6:
+                    UserInfo.getInstance().addImportantEmailAddressList(keyword);
+                    break;
+            }
+            updateList(true);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -178,36 +214,36 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new OnListSelected());
     }
 
-    private void updateList(boolean clickToRemove) {
+    private void updateList(boolean showClickToRemove) {
         switch (currentListID) {
             case 0:
-                updateList(UserInfo.getInstance().getTitleBlackList(), clickToRemove);
+                updateList(UserInfo.getInstance().getTitleBlackList(), showClickToRemove);
                 break;
             case 1:
-                updateList(UserInfo.getInstance().getTitleWhiteList(), clickToRemove);
+                updateList(UserInfo.getInstance().getTitleWhiteList(), showClickToRemove);
                 break;
             case 2:
-                updateList(UserInfo.getInstance().getTitleStarList(), clickToRemove);
+                updateList(UserInfo.getInstance().getTitleStarList(), showClickToRemove);
                 break;
             case 3:
-                updateList(UserInfo.getInstance().getContentBlackList(), clickToRemove);
+                updateList(UserInfo.getInstance().getContentBlackList(), showClickToRemove);
                 break;
             case 4:
-                updateList(UserInfo.getInstance().getContentWhiteList(), clickToRemove);
+                updateList(UserInfo.getInstance().getContentWhiteList(), showClickToRemove);
                 break;
             case 5:
-                updateList(UserInfo.getInstance().getContentStarList(), clickToRemove);
+                updateList(UserInfo.getInstance().getContentStarList(), showClickToRemove);
                 break;
             case 6:
-                updateList(UserInfo.getInstance().getImportantEmailAddressList(), clickToRemove);
+                updateList(UserInfo.getInstance().getImportantEmailAddressList(), showClickToRemove);
                 break;
         }
     }
 
-    private void updateList(List<String> updatedList, boolean clickToRemove) {
+    private void updateList(List<String> updatedList, boolean showClickToRemove) {
         ListView currentListView = (ListView)findViewById(R.id.currlist);
         updatedList = new ArrayList<String>((ArrayList<String>) updatedList); // make a deep copy to prevent modifying the list in UserInfo
-        if (clickToRemove) {
+        if (showClickToRemove) {
             currentListView.setOnItemClickListener(new OnDeleteWordRowListener());
             for (int i = 0; i < updatedList.size(); ++i)
                 updatedList.set(i, updatedList.get(i) + " - click to remove");
@@ -217,9 +253,9 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
     }
 
     public void onClickShowList(View view) {
-        updateList(false);
         Button modifyListButton = (Button)findViewById((R.id.modifyList));
         modifyListButton.setText("Modify List");
+        updateList(false);
     }
 
     public void onClickModifyList(View view) {
@@ -228,16 +264,70 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
         if (((Button)view).getText().equals("Modify List")) {
             // Modifying list
             ((Button)view).setText("Done!");
+            Button addKeywordButton = (Button)findViewById(R.id.addKeyword);
+            addKeywordButton.setVisibility(View.VISIBLE);
             updateList(true);
         }
         else {
             // Done Modifying list
+            ((Button)view).setText("Modify List");
+            Button addKeywordButton = (Button)findViewById(R.id.addKeyword);
+            addKeywordButton.setVisibility(View.GONE);
             // Write to Database
             UserInfo.getInstance().writeToDatabase();
-            ((Button)view).setText("Modify List");
             updateList(false);
         }
 
+    }
+
+    public void onClickAddKeyword(View view) {
+        AlertDialog alertDialog = new AlertDialog.Builder(KeywordAddressModificationActivity.this).create();
+
+        // Set Custom Title
+        TextView title = new TextView(KeywordAddressModificationActivity.this);
+        // Title Properties
+        title.setText("+ Add New Keyword");
+        title.setPadding(10, 10, 10, 10);   // Set Position
+        title.setGravity(Gravity.CENTER);
+        title.setTextColor(Color.BLACK);
+        title.setTextSize(20);
+        alertDialog.setCustomTitle(title);
+
+        // Set Message
+        EditText newKeyword = new EditText(KeywordAddressModificationActivity.this);
+        newKeyword.setSingleLine();
+        newKeyword.setId(R.id.new_keyword_edit_text);
+        // Message Properties
+        newKeyword.setGravity(Gravity.CENTER_HORIZONTAL);
+        newKeyword.setTextColor(Color.BLACK);
+        alertDialog.setView(newKeyword);
+
+        // Set Button
+        // you can more buttons
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL,"ADD NEW KEYWORD", new OnKeywordAddedListener(newKeyword));
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE,"CANCEL", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // Nothing to do
+            }
+        });
+
+        new Dialog(getApplicationContext());
+        alertDialog.show();
+
+        // Set Properties for OK Button
+        final Button okBT = alertDialog.getButton(AlertDialog.BUTTON_NEUTRAL);
+        LinearLayout.LayoutParams neutralBtnLP = (LinearLayout.LayoutParams) okBT.getLayoutParams();
+        neutralBtnLP.gravity = Gravity.FILL_HORIZONTAL;
+        okBT.setPadding(50, 10, 10, 10);   // Set Position
+        okBT.setTextColor(Color.BLUE);
+        okBT.setLayoutParams(neutralBtnLP);
+
+        final Button cancelBT = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+        LinearLayout.LayoutParams negBtnLP = (LinearLayout.LayoutParams) okBT.getLayoutParams();
+        negBtnLP.gravity = Gravity.FILL_HORIZONTAL;
+        cancelBT.setTextColor(Color.RED);
+        cancelBT.setLayoutParams(negBtnLP);
     }
 
 
