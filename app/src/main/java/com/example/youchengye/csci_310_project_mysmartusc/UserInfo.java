@@ -10,11 +10,14 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldPath;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,8 +40,6 @@ public class UserInfo {
                 .setTimestampsInSnapshotsEnabled(true)
                 .build();
         firestore.setFirestoreSettings(settings);
-        // before Initialization (retrieval from database) the UserInfo Object is not ready
-        ready = false;
     }
 
     // Singleton Related Code
@@ -69,8 +70,22 @@ public class UserInfo {
     private Set<String> contentWhiteSet = new HashSet<String>();
     private Set<String> contentStarSet = new HashSet<String>();
     private Set<String> importantEmailAddressSet = new HashSet<String>();
+    private boolean titleBlackListChanged;
+    private boolean titleWhiteListChanged;
+    private boolean titleStarListChanged;
+    private boolean contentBlackListChanged;
+    private boolean contentWhiteListChanged;
+    private boolean contentStarListChanged;
+    private boolean importantEmailAddressListChanged;
     public void Initialize(String username) {
         this.username = username;
+        titleBlackListChanged = false;
+        titleWhiteListChanged = false;
+        titleStarListChanged = false;
+        contentBlackListChanged = false;
+        contentWhiteListChanged = false;
+        contentStarListChanged = false;
+        importantEmailAddressListChanged = false;
         CollectionReference usersRef = firestore.collection("Users");
         // retrieve and initialize all the lists in UserData Object
         usersRef.whereEqualTo("username", username)
@@ -81,15 +96,15 @@ public class UserInfo {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             HashMap<String, Object> databaseUserInfoRetrieval = (HashMap<String, Object>)document.getData();
-                            for (String s: (ArrayList<String>) databaseUserInfoRetrieval.get("titleBlackList")) {
-                                Log.d(TAG, "s1: " + s);
-                            }
                             UserInfo.getInstance().setTitleBlackList((ArrayList<String>) databaseUserInfoRetrieval.get("titleBlackList"));
                             UserInfo.getInstance().setTitleWhiteList((ArrayList<String>) databaseUserInfoRetrieval.get("titleWhiteList"));
+                            UserInfo.getInstance().setTitleStarList((ArrayList<String>) databaseUserInfoRetrieval.get("titleStarList"));
+                            UserInfo.getInstance().setContentBlackList((ArrayList<String>) databaseUserInfoRetrieval.get("contentBlackList"));
+                            UserInfo.getInstance().setContentWhiteList((ArrayList<String>) databaseUserInfoRetrieval.get("contentWhiteList"));
+                            UserInfo.getInstance().setContentStarList((ArrayList<String>) databaseUserInfoRetrieval.get("contentStarList"));
+                            UserInfo.getInstance().setImportantEmailAddressList((ArrayList<String>) databaseUserInfoRetrieval.get("importantEmailAddressList"));
                             Log.d(TAG, document.getId() + " => " + document.getData());
-                            UserInfo.getInstance().setReady();
                             // information has been retrieved from database
-                            // UserInfo object now ready
                         }
                     } else {
                         Log.d(TAG, "Error getting documents: ", task.getException());
@@ -109,9 +124,6 @@ public class UserInfo {
     public List<String> getContentWhiteList() {return contentWhiteList;}
     public List<String> getContentStarList() {return contentStarList;}
     public List<String> getImportantEmailAddressList() {return importantEmailAddressList;}
-    private void setListAndSet(String listName, List<String> toList) {
-
-    }
     public void setTitleBlackList(List<String> newTitleBlackList) {
         if (newTitleBlackList == null) {
             titleBlackList.clear();
@@ -183,8 +195,46 @@ public class UserInfo {
         }
     }
 
-    // Database Retrieval Preparedness
-    public boolean ready;
-    public boolean isReady() {return ready;}
-    public void setReady() {ready = true;}
+    // Keywords Modification
+    public void addTitleBlackList(String keyword) {titleBlackList.add(keyword); titleBlackSet.add(keyword); titleBlackListChanged = true;}
+    public void addTitleWhiteList(String keyword) {titleWhiteList.add(keyword); titleWhiteSet.add(keyword); titleWhiteListChanged = true;}
+    public void addTitleStarList(String keyword) {titleStarList.add(keyword); titleStarSet.add(keyword); titleStarListChanged = true;}
+    public void addContentBlackList(String keyword) {contentBlackList.add(keyword); contentBlackSet.add(keyword); contentBlackListChanged = true;}
+    public void addContentWhiteList(String keyword) {contentWhiteList.add(keyword); contentWhiteSet.add(keyword); contentWhiteListChanged = true;}
+    public void addContentStarList(String keyword) {contentStarList.add(keyword); contentStarSet.add(keyword); contentStarListChanged = true;}
+    public void addImportantEmailAddressList(String keyword) {importantEmailAddressList.add(keyword); importantEmailAddressSet.add(keyword); importantEmailAddressListChanged = true;}
+    public void removeTitleBlackList(String keyword) {titleBlackList.remove(keyword); titleBlackSet.remove(keyword); titleBlackListChanged = true;}
+    public void removeTitleWhiteList(String keyword) {titleWhiteList.remove(keyword); titleWhiteSet.remove(keyword); titleWhiteListChanged = true;}
+    public void removeTitleStarList(String keyword) {titleStarList.remove(keyword); titleStarSet.remove(keyword); titleStarListChanged = true;}
+    public void removeContentBlackList(String keyword) {contentBlackList.remove(keyword); contentBlackSet.remove(keyword); contentBlackListChanged = true;}
+    public void removeContentWhiteList(String keyword) {contentWhiteList.remove(keyword); contentWhiteSet.remove(keyword); contentWhiteListChanged = true;}
+    public void removeContentStarList(String keyword) {contentStarList.remove(keyword); contentStarSet.remove(keyword); contentStarListChanged = true;}
+    public void removeImportantEmailAddressList(String keyword) {importantEmailAddressList.remove(keyword); importantEmailAddressSet.remove(keyword); importantEmailAddressListChanged = true;}
+
+    // Write to database
+    public void writeToDatabase() {
+        Map<String, Object> changes = new HashMap<String, Object>();
+        if (titleBlackListChanged) {
+            changes.put("titleBlackList", FieldValue.delete());
+            changes.put("titleBlackList", titleBlackList);
+        }
+
+        if (titleWhiteListChanged) {
+            changes.put("titleWhiteList", FieldValue.delete());
+            changes.put("titleWhiteList", titleWhiteList);
+        }
+
+        if (titleStarListChanged)
+            changes.put("titleStarList", titleStarList);
+        if (contentBlackListChanged)
+            changes.put("contentBlackList", contentBlackList);
+        if (contentWhiteListChanged)
+            changes.put("contentWhiteList", contentWhiteList);
+        if (contentStarListChanged)
+            changes.put("contentStarList", contentStarList);
+        if (importantEmailAddressListChanged)
+            changes.put("importantEmailAddessList", importantEmailAddressList);
+        FirebaseFirestore.getInstance().collection("Users").document(username).set(changes, SetOptions.merge());
+    }
+
 }

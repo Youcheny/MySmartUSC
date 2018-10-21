@@ -10,8 +10,8 @@
         <item>Content Star List</item>
         <item>Important Email Addresses List</item>
     </string-array>
-
-
+    <string name="confirm_deletion_front">Are you sure you want to delete keyword </string>
+    <string name="confirm_deletion_end"> from the current selected list?</string>
 
 
     //notification system
