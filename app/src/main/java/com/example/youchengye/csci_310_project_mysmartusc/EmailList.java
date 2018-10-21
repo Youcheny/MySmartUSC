@@ -18,6 +18,7 @@ import java.util.Properties;
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
+import com.google.api.services.gmail.model.ModifyMessageRequest;
 
 import java.io.ByteArrayInputStream;
 
@@ -87,6 +88,8 @@ public class EmailList {
 
         ListMessagesResponse response = singleInstance.service.users().messages().list(singleInstance.userId).setMaxResults((long) 8).execute();
         List<Message> messages = new ArrayList<>();
+
+
 
         if (response.getMessages() != null) {
             messages.addAll(response.getMessages());
@@ -185,5 +188,33 @@ public class EmailList {
             result = getTextFromMimeMultipart((MimeMultipart)bodyPart.getContent());
         }
         return result;
+    }
+
+    private void markAsRead(String messageId){
+        List<String> labelsToRemove = new ArrayList<String>();
+        labelsToRemove.add("UNREAD");
+        ModifyMessageRequest mods = new ModifyMessageRequest().setRemoveLabelIds(labelsToRemove);
+        try{
+            Message message = service.users().messages().modify(userId, messageId, mods).execute();
+            System.out.println("Message id: " + message.getId());
+            System.out.println(message.toPrettyString());
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+
+    }
+
+    private void markAsStar(String messageId){
+        List<String> labelsToAdd = new ArrayList<String>();
+        labelsToAdd.add("STARRED");
+        ModifyMessageRequest mods = new ModifyMessageRequest().setAddLabelIds(labelsToAdd);
+        try{
+            Message message = service.users().messages().modify(userId, messageId, mods).execute();
+            System.out.println("Message id: " + message.getId());
+            System.out.println(message.toPrettyString());
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+
     }
 }
