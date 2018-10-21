@@ -238,8 +238,8 @@ public class UserInfo {
             changes.put("contentStarList", contentStarList);
         }
         if (importantEmailAddressListChanged) {
-            changes.put("importantEmailAddessList", FieldValue.delete());
-            changes.put("importantEmailAddessList", importantEmailAddressList);
+            changes.put("importantEmailAddressList", FieldValue.delete());
+            changes.put("importantEmailAddressList", importantEmailAddressList);
         }
         DocumentReference userRef = FirebaseFirestore.getInstance().collection("Users").document(username);
         userRef.set(changes, SetOptions.merge());
