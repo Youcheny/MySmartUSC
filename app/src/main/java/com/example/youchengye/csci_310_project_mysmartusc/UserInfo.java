@@ -210,6 +210,15 @@ public class UserInfo {
     public void removeContentStarList(String keyword) {contentStarList.remove(keyword); contentStarSet.remove(keyword); contentStarListChanged = true;}
     public void removeImportantEmailAddressList(String keyword) {importantEmailAddressList.remove(keyword); importantEmailAddressSet.remove(keyword); importantEmailAddressListChanged = true;}
 
+    // Keyword Checks
+    public boolean checkTitleBlackList(String keyword) {return titleBlackSet.contains(keyword);}
+    public boolean checkTitleWhiteList(String keyword) {return titleWhiteSet.contains(keyword);}
+    public boolean checkTitleStarList(String keyword) {return titleStarSet.contains(keyword);}
+    public boolean checkContentBlackList(String keyword) {return contentBlackSet.contains(keyword);}
+    public boolean checkContentWhiteList(String keyword) {return contentWhiteSet.contains(keyword);}
+    public boolean checkContentStarList(String keyword) {return contentStarSet.contains(keyword);}
+    public boolean checkImportantEmailAddressList(String keyword) {return importantEmailAddressSet.contains(keyword);}
+    
     // Write to database
     public void writeToDatabase() {
         Map<String, Object> changes = new HashMap<String, Object>();
