@@ -74,38 +74,29 @@ public class LoginActivity extends AppCompatActivity implements
 
 
         String serverClientId = getString(R.string.server_client_id);
-//        Log.w(TAG, serverClientId);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestScopes(new Scope("https://mail.google.com/"))
-//                .requestIdToken(serverClientId)
                 .requestServerAuthCode(serverClientId)
                 .requestEmail()
                 .build();
-        // [END configure_signin]
 
-        // [START build_client]
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        // [END build_client]
 
-        // [START customize_button]
         // Set the dimensions of the sign-in button.
         SignInButton signInButton = findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_STANDARD);
         signInButton.setColorScheme(SignInButton.COLOR_LIGHT);
-        // [END customize_button]
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        // [START on_start_sign_in]
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         updateUI(account);
-        // [END on_start_sign_in]
     }
 
     // [START onActivityResult]
@@ -132,6 +123,7 @@ public class LoginActivity extends AppCompatActivity implements
             String id = account.getId();
             Log.w(TAG, "id: "+id);
             EmailList.getInstance().setId(id);
+            EmailList.getInstance().setLogin(this);
 //            Log.w(TAG, "idToken: "+idToken);
             Log.w(TAG, "authCode: "+authCode);
             OkHttpClient client = new OkHttpClient();
@@ -160,30 +152,22 @@ public class LoginActivity extends AppCompatActivity implements
 //                        Log.i(TAG, message);
                         final String access_token = jsonObject.getString("access_token");
 //                        Log.i(TAG, "access_token: "+access_token);
-                        EmailList.getInstance().initialize(access_token);
+                        EmailList.getInstance().initialize(access_token, getString(R.string.channel_id));
                         List<Header> headers = EmailList.getInstance().listMessages();
-                        createNotification(headers);
+//                        createNotification(headers);
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } catch (MessagingException e) {
+                    } catch (JSONException | MessagingException e) {
                         e.printStackTrace();
                     }
                 }
             });
             // Signed in successfully, show authenticated UI.
             updateUI(account);
-            // jump to KeywordsAddressModification page
-            Thread.sleep(1000);
-            Intent gotoKeywordsPage = new Intent(this, KeywordAddressModificationActivity.class);
-            startActivity(gotoKeywordsPage);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
             updateUI(null);
-        } catch (InterruptedException e){
-            e.printStackTrace();
         }
     }
     // [END handleSignInResult]
@@ -225,8 +209,11 @@ public class LoginActivity extends AppCompatActivity implements
 
     private void updateUI(@Nullable GoogleSignInAccount account) {
         if (account != null) {
+            /**
+             * get the users important keywords, username to be change later
+             */
+            UserInfo.getInstance().Initialize("youcheny");
             mStatusTextView.setText(getString(R.string.signed_in_fmt, account.getDisplayName())+"\n Waiting for Emails...");
-
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
             findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
         } else {
@@ -293,15 +280,10 @@ public class LoginActivity extends AppCompatActivity implements
         List<String> contentWhiteList = UserInfo.getInstance().getContentWhiteList();
         List<String> importantEmailAddresses = UserInfo.getInstance().getImportantEmailAddressList();
         List<Header> importantEmails = new ArrayList<>();
-        List<String> titleStarList = UserInfo.getInstance().getTitleStarList();
-        List<String> cotentStarList = UserInfo.getInstance().getContentStarList();
-        List<String>  titleBlackList = UserInfo.getInstance().getTitleBlackList();
-        List<String> contentBlackList  =UserInfo.getInstance().getContentBlackList();
-
         Log.w("titlewhiltelist", titleWhiteList.toString());
         Log.w("contentWhiteList", contentWhiteList.toString());
         Set<Header> checkers = new HashSet<>();
-        for (Header h:headers) {
+        for (Header h:headers){
             Log.w("headers", h.from);
             for (String keyword:titleWhiteList){
                 if (h.subject.toLowerCase().contains(keyword.toLowerCase())){
@@ -309,7 +291,7 @@ public class LoginActivity extends AppCompatActivity implements
                         importantEmails.add(h);
                         checkers.add(h);
                     }
-                    break;
+                    continue;
                 }
             }
 
@@ -319,8 +301,8 @@ public class LoginActivity extends AppCompatActivity implements
                         importantEmails.add(h);
                         checkers.add(h);
                     }
-                    break;
                 }
+                continue;
             }
 
             for (String keyword: importantEmailAddresses){
@@ -328,114 +310,82 @@ public class LoginActivity extends AppCompatActivity implements
                     if (!checkers.contains(h)){
                         importantEmails.add(h);
                         checkers.add(h);
-                        break;
                     }
                 }
-            }
-
-            // check if a email should be starred
-            Boolean starred = false;
-            for (String keyword : titleStarList){
-                if(h.subject.toLowerCase().contains(keyword.toLowerCase())){
-                    EmailList.getInstance().markAsStar(h.messageId);
-                    starred = true;
-                    break;
-                }
-            }
-
-            if(!starred){ // check content for star keyword
-                for(String keyword : cotentStarList) {
-                    if(h.content.toLowerCase().contains(keyword.toLowerCase())) {
-                        EmailList.getInstance().markAsStar(h.messageId);
-                        starred = true;
-                        break;
-                    }
-                }
-            }
-
-            // The email contains neither keywords in Whitelist nor Starlist,
-            // but contains keywords in Blacklist. User will see the email marked as read
-            if(!checkers.contains(h) && !starred){
-                Boolean read = false;
-                for(String keyword : titleBlackList){
-                    if(h.subject.toLowerCase().contains(keyword.toLowerCase())){
-                        EmailList.getInstance().markAsRead(h.messageId);
-                        read = true;
-                        break;
-                    }
-                }
-
-                if(!read){ // check content for blacklist keyword
-                    for(String keyword : contentBlackList){
-                        if(h.content.toLowerCase().contains(keyword.toLowerCase())){
-                            EmailList.getInstance().markAsRead(h.messageId);
-                            break;
-                        }
-                    }
-                }
+                continue;
             }
 
         }
+        Log.w("count", "size "+importantEmails.size());
         return importantEmails;
     }
 
     // for testing notification
     public void onClickNotification(View view) throws IOException, MessagingException {
-//        try {
-//            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-//            if (account == null){
-//                Log.w("account","account is null");
-//            }else{
-//                Log.w("account", account.getServerAuthCode());
-//            }
-//            String authCode = account.getServerAuthCode();
-////            String idToken = account.getIdToken();
-//            String id = account.getId();
-//            Log.w(TAG, "id: "+id);
-//            EmailList.getInstance().setId(id);
-////            Log.w(TAG, "idToken: "+idToken);
-//            Log.w(TAG, "authCode: "+authCode);
-//            OkHttpClient client = new OkHttpClient();
-//            RequestBody requestBody = new FormEncodingBuilder()
-//                    .add("grant_type", "authorization_code")
-//                    .add("client_id", getString(R.string.server_client_id))
-//                    .add("client_secret", getString(R.string.client_secret))
-//                    .add("redirect_uri","")
-//                    .add("code", authCode)
-//                    .build();
-//            final Request request = new Request.Builder()
-//                    .url("https://www.googleapis.com/oauth2/v4/token")
-//                    .post(requestBody)
-//                    .build();
-//            client.newCall(request).enqueue(new Callback() {
-//                @Override
-//                public void onFailure(final Request request, final IOException e) {
-//                    Log.e(TAG, e.toString());
-//                }
-//
-//                @Override
-//                public void onResponse(Response response) throws IOException {
-//                    try {
-//                        JSONObject jsonObject = new JSONObject(response.body().string());
-//                        final String message = jsonObject.toString(5);
-////                        Log.i(TAG, message);
-//                        final String access_token = jsonObject.getString("access_token");
-////                        Log.i(TAG, "access_token: "+access_token);
-//                        EmailList.getInstance().initialize(access_token);
-//
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    } catch (MessagingException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            });
-//            // Signed in successfully, show authenticated UI.
-//            updateUI(account);
+//        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+//        if (account == null){
+//            Log.w("account","account is null");
+//        }else{
+//            Log.w("account", account.getServerAuthCode());
 //        }
+//        String authCode = account.getServerAuthCode();
+////            String idToken = account.getIdToken();
+//        String id = account.getId();
+//        Log.w(TAG, "id: "+id);
+//        EmailList.getInstance().setId(id);
+////            Log.w(TAG, "idToken: "+idToken);
+//        Log.w(TAG, "authCode: "+authCode);
+//        OkHttpClient client = new OkHttpClient();
+//        RequestBody requestBody = new FormEncodingBuilder()
+//                .add("grant_type", "authorization_code")
+//                .add("client_id", getString(R.string.server_client_id))
+//                .add("client_secret", getString(R.string.client_secret))
+//                .add("redirect_uri","")
+//                .add("code", authCode)
+//                .build();
+//        final Request request = new Request.Builder()
+//                .url("https://www.googleapis.com/oauth2/v4/token")
+//                .post(requestBody)
+//                .build();
+//        client.newCall(request).enqueue(new Callback() {
+//            @Override
+//            public void onFailure(final Request request, final IOException e) {
+//                Log.e(TAG, e.toString());
+//            }
+//
+//            @Override
+//            public void onResponse(Response response) throws IOException {
+//                try {
+//                    JSONObject jsonObject = new JSONObject(response.body().string());
+//                    final String message = jsonObject.toString(5);
+////                        Log.i(TAG, message);
+//                    final String access_token = jsonObject.getString("access_token");
+////                        Log.i(TAG, "access_token: "+access_token);
+//                    EmailList.getInstance().initialize(access_token);
+//
+//                } catch (JSONException | MessagingException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//        // Signed in successfully, show authenticated UI.
+//        updateUI(account);
 
-        List<Header> headers = EmailList.getInstance().listMessages();
-        createNotification(headers);
+
+//        try {
+//            List<Header> headers = EmailList.getInstance().listMessages();
+//            for(Header header:headers){
+//                Log.i(TAG, "subject: "+header.subject);
+//                Log.i(TAG, "from: "+header.from);
+////                Log.i(TAG, "snippet: "+header.snippet);
+//                Log.i(TAG, "messageId: "+header.messageId);
+//                Log.i(TAG, "content: "+header.content);
+//            }
+//            createNotification(headers);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        EmailList.getInstance().initialize();
     }
 
 }

@@ -1,5 +1,10 @@
 package com.example.youchengye.csci_310_project_mysmartusc;
 
+import android.app.NotificationManager;
+import android.os.Build;
+import android.os.PowerManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -12,6 +17,7 @@ import com.google.api.services.gmail.model.Message;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 
@@ -21,12 +27,19 @@ import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 import com.google.api.services.gmail.model.ModifyMessageRequest;
 
 import java.io.ByteArrayInputStream;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.mail.Session;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import org.jsoup.Jsoup;
+
+import static android.content.Context.POWER_SERVICE;
+
 public class EmailList {
     private static final String TAG = "EmailList";
     private GoogleCredential credential;
@@ -34,6 +47,9 @@ public class EmailList {
     private String userId;
     private String accessToken;
     private static EmailList singleInstance;
+    private final int NOTIFICATION_ID = 1;
+    private String channel_id;
+    private LoginActivity login;
 
     private EmailList(){
         this.credential = null;
@@ -42,25 +58,45 @@ public class EmailList {
         this.userId = "me";
     }
 
-    public void initialize(String accessToken) throws IOException, MessagingException {
+    public void setLogin(final LoginActivity login){
+        this.login = login;
+    }
+
+    public void initialize(String accessToken, String channel_id) throws IOException, MessagingException {
         this.accessToken = accessToken;
+        this.channel_id = channel_id;
+        this.login = login;
         this.credential = new GoogleCredential().setAccessToken(accessToken);
         this.service = new Gmail.Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance(), credential)
                 .setApplicationName("MySmartUSC").build();
 
-        try {
-            List<Header> headers = EmailList.getInstance().listMessages();
-            for(Header header:headers){
-//                Log.i(TAG, "subject: "+header.subject);
-//                Log.i(TAG, "from: "+header.from);
-//                Log.i(TAG, "snippet: "+header.snippet);
-//                Log.i(TAG, "messageId: "+header.messageId);
-//                Log.i(TAG, "content: "+header.content);
+        ScheduledExecutorService executor =
+                Executors.newSingleThreadScheduledExecutor();
+
+        Runnable periodicTask = new Runnable() {
+            public void run() {
+                // Invoke method(s) to do the work
+                try {
+                    List<Header> headers = listMessages();
+                    for (Header header : headers) {
+                        Log.i(TAG, "subject: " + header.subject);
+                        Log.i(TAG, "from: " + header.from);
+                        //                Log.i(TAG, "snippet: "+header.snippet);
+                        Log.i(TAG, "messageId: " + header.messageId);
+                        Log.i(TAG, "content: " + header.content);
+                    }
+                    login.createNotification(headers);
+                } catch (IOException | MessagingException e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        };
+
+        executor.scheduleAtFixedRate(periodicTask, 0, 10, TimeUnit.SECONDS);
     }
+//    public void initialize() throws IOException, MessagingException {
+//        initialize(accessToken);
+//    }
 
     public void setId(String id){
         this.userId = id;
@@ -68,9 +104,12 @@ public class EmailList {
 
     public static EmailList getInstance(){
         if(singleInstance!=null){
+            Log.w(TAG, "NOT EMPTY!!!");
+            Log.w(TAG, "accessToken: "+singleInstance.accessToken);
             return singleInstance;
         }
         else{
+            Log.w(TAG, "EMPTY!!!");
             singleInstance = new EmailList();
             return singleInstance;
         }
@@ -85,8 +124,13 @@ public class EmailList {
      * @throws MessagingException throw messageexception
      */
     public List<Header> listMessages() throws IOException, MessagingException {
-
-        ListMessagesResponse response = singleInstance.service.users().messages().list(singleInstance.userId).setMaxResults((long) 8).execute();
+//        this.credential = new GoogleCredential().setAccessToken(accessToken);
+//        service = new Gmail.Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance(), credential)
+//                .setApplicationName("MySmartUSC").build();
+//        initialize(accessToken);
+        Log.w(TAG, "service: "+service);
+        Log.w(TAG, "userId: "+userId);
+        ListMessagesResponse response = service.users().messages().list(userId).setMaxResults((long) 8).execute();
         List<Message> messages = new ArrayList<>();
 
 
@@ -133,14 +177,14 @@ public class EmailList {
         List<String> metadataHeaders = new ArrayList<>();
         metadataHeaders.add("From");
         metadataHeaders.add("Subject");
-        Message message = singleInstance.service.users().messages().get(singleInstance.userId, messageId).execute();
+        Message message = service.users().messages().get(userId, messageId).execute();
         return message;
     }
 
 
     private MimeMessage getMimeMessage(String messageId)
             throws IOException, MessagingException {
-        Message message = singleInstance.service.users().messages().get(userId, messageId).setFormat("raw").execute();
+        Message message = service.users().messages().get(userId, messageId).setFormat("raw").execute();
         //parse the return message
         Base64 base64Url = new Base64(true);
         byte[] emailBytes = base64Url.decodeBase64(message.getRaw());
@@ -190,31 +234,110 @@ public class EmailList {
         return result;
     }
 
-    public void markAsRead(String messageId){
-        List<String> labelsToRemove = new ArrayList<String>();
-        labelsToRemove.add("UNREAD");
-        ModifyMessageRequest mods = new ModifyMessageRequest().setRemoveLabelIds(labelsToRemove);
-        try{
-            Message message = service.users().messages().modify(userId, messageId, mods).execute();
-            System.out.println("Message id: " + message.getId());
-            System.out.println(message.toPrettyString());
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-
-    }
-
-    public void markAsStar(String messageId){
-        List<String> labelsToAdd = new ArrayList<String>();
-        labelsToAdd.add("STARRED");
-        ModifyMessageRequest mods = new ModifyMessageRequest().setAddLabelIds(labelsToAdd);
-        try{
-            Message message = service.users().messages().modify(userId, messageId, mods).execute();
-            System.out.println("Message id: " + message.getId());
-            System.out.println(message.toPrettyString());
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-
-    }
+//    private void markAsRead(String messageId){
+//        List<String> labelsToRemove = new ArrayList<String>();
+//        labelsToRemove.add("UNREAD");
+//        ModifyMessageRequest mods = new ModifyMessageRequest().setRemoveLabelIds(labelsToRemove);
+//        try{
+//            Message message = service.users().messages().modify(userId, messageId, mods).execute();
+//            System.out.println("Message id: " + message.getId());
+//            System.out.println(message.toPrettyString());
+//        }catch(IOException e){
+//            e.printStackTrace();
+//        }
+//
+//    }
+//
+//    private void markAsStar(String messageId){
+//        List<String> labelsToAdd = new ArrayList<String>();
+//        labelsToAdd.add("STARRED");
+//        ModifyMessageRequest mods = new ModifyMessageRequest().setAddLabelIds(labelsToAdd);
+//        try{
+//            Message message = service.users().messages().modify(userId, messageId, mods).execute();
+//            System.out.println("Message id: " + message.getId());
+//            System.out.println(message.toPrettyString());
+//        }catch(IOException e){
+//            e.printStackTrace();
+//        }
+//
+//    }
+//
+//    public void createNotification(List<Header> headers){
+//        List<Header> importantEmails = checkEmail(headers);
+//
+//        if (importantEmails!=null && importantEmails.size()!=0) {
+//            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.channel_id))
+//                    .setSmallIcon(R.drawable.ic_channel_icon)
+//                    .setContentTitle("Important Emails")
+//                    .setContentText(createContentText(importantEmails.get(0)))
+//                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+//                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+//            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+////            PowerManager powerManager = (PowerManager) this.getSystemService(POWER_SERVICE);
+//
+////            if (!powerManager.isInteractive()){ // if screen is not already on, turn it on (get wake_lock for 10 seconds)
+////                PowerManager.WakeLock wl = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK |PowerManager.ACQUIRE_CAUSES_WAKEUP |PowerManager.ON_AFTER_RELEASE,"MH24_SCREENLOCK");
+////                wl.acquire(10000);
+////                PowerManager.WakeLock wl_cpu = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"MH24_SCREENLOCK");
+////                wl_cpu.acquire(10000);
+////            }
+//
+//            notificationManager.notify(NOTIFICATION_ID, builder.build());
+//        }
+//    }
+//    private String createContentText(Header header){
+//        String contentText = "From "+ header.from + ": "+header.snippet;
+//        return contentText;
+//    }
+//
+//    private void deleteNotificationChannel(){
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+//            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+//            notificationManager.deleteNotificationChannel(getString(R.string.channel_id));
+//        }
+//    }
+//    private List<Header> checkEmail(List<Header> headers){
+//        List<String> titleWhiteList = UserInfo.getInstance().getTitleWhiteList();
+//        List<String> contentWhiteList = UserInfo.getInstance().getContentWhiteList();
+//        List<String> importantEmailAddresses = UserInfo.getInstance().getImportantEmailAddressList();
+//        List<Header> importantEmails = new ArrayList<>();
+//        Log.w("titlewhiltelist", titleWhiteList.toString());
+//        Log.w("contentWhiteList", contentWhiteList.toString());
+//        Set<Header> checkers = new HashSet<>();
+//        for (Header h:headers){
+//            Log.w("headers", h.from);
+//            for (String keyword:titleWhiteList){
+//                if (h.subject.toLowerCase().contains(keyword.toLowerCase())){
+//                    if (!checkers.contains(h)){
+//                        importantEmails.add(h);
+//                        checkers.add(h);
+//                    }
+//                    continue;
+//                }
+//            }
+//
+//            for (String keyword: contentWhiteList){
+//                if (h.content.toLowerCase().contains(keyword.toLowerCase())){
+//                    if (!checkers.contains(h)){
+//                        importantEmails.add(h);
+//                        checkers.add(h);
+//                    }
+//                }
+//                continue;
+//            }
+//
+//            for (String keyword: importantEmailAddresses){
+//                if (h.from.toLowerCase().contains(keyword.toLowerCase())){
+//                    if (!checkers.contains(h)){
+//                        importantEmails.add(h);
+//                        checkers.add(h);
+//                    }
+//                }
+//                continue;
+//            }
+//
+//        }
+//        Log.w("count", "size "+importantEmails.size());
+//        return importantEmails;
+//    }
 }
