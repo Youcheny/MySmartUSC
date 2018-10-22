@@ -100,6 +100,7 @@ public class UserInfo {
                         if (task.isSuccessful()) {
                             DocumentSnapshot document = task.getResult();
                             HashMap<String, Object> databaseUserInfoRetrieval = (HashMap<String, Object>)document.getData();
+                            if (databaseUserInfoRetrieval == null) databaseUserInfoRetrieval = new HashMap<String, Object>(); // empty hashmap to prevent crash
                             UserInfo.getInstance().setTitleBlackList((ArrayList<String>) databaseUserInfoRetrieval.get("titleBlackList"));
                             UserInfo.getInstance().setTitleWhiteList((ArrayList<String>) databaseUserInfoRetrieval.get("titleWhiteList"));
                             UserInfo.getInstance().setTitleStarList((ArrayList<String>) databaseUserInfoRetrieval.get("titleStarList"));

@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -172,8 +173,24 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
         // Populate the spinner with default values
         populateSpinnerValues();
         currentListID = 0;
+
+        if(getIntent()!=null){
+            Bundle extras = getIntent().getExtras();
+            if (extras!=null){
+                String username = extras.getString("username");
+                UserInfo.getInstance().Initialize("username");
+            }
+            Log.w("intent","not null");
+
+        }else{
+            Log.w("intent","null");
+        }
+//        if (extras!=null){
+//            String username = extras.getString("username");
+//            UserInfo.getInstance().Initialize("username");
+//        }
         // wait while the list values are retrieved from the database
-        UserInfo.getInstance().Initialize("youcheny"); // "youcheny" to be changed later
+//        UserInfo.getInstance().Initialize("youcheny"); // "youcheny" to be changed later
 
 
 //        ListView mainListView = (ListView) findViewById( R.id.here );

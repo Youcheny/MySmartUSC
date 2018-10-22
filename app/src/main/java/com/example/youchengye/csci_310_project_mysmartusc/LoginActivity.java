@@ -160,6 +160,11 @@ public class LoginActivity extends AppCompatActivity implements
             });
             // Signed in successfully, show authenticated UI.
             updateUI(account);
+
+//            Thread.sleep(1000);
+            Intent gotoKeywordsPage = new Intent(this, KeywordAddressModificationActivity.class);
+            gotoKeywordsPage.putExtra("username", id);
+            startActivity(gotoKeywordsPage);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
@@ -278,8 +283,8 @@ public class LoginActivity extends AppCompatActivity implements
         List<String>  titleBlackList = UserInfo.getInstance().getTitleBlackList();
         List<String> contentBlackList  =UserInfo.getInstance().getContentBlackList();
 
-//        Log.w("titlewhiltelist", titleWhiteList.toString());
-//        Log.w("contentWhiteList", contentWhiteList.toString());
+        Log.w("titlewhiltelist", titleWhiteList.toString());
+        Log.w("contentWhiteList", contentWhiteList.toString());
         Set<Header> checkers = new HashSet<>();
         for (Header h:headers) {
             for (String keyword:titleWhiteList){
