@@ -161,7 +161,13 @@ public class LoginActivity extends AppCompatActivity implements
 //                        Log.i(TAG, "access_token: "+access_token);
                         EmailList.getInstance().initialize(access_token);
                         List<Header> headers = EmailList.getInstance().listMessages();
-                        createNotification(headers);
+
+                        /**
+                         * prepare to delete, just for notification testing
+                         */
+                        HashSet<String> keywords = new HashSet();
+                        keywords.add("detailed");
+                        createNotification(headers, keywords);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     } catch (MessagingException e) {
@@ -244,9 +250,8 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-    public void createNotification(List<Header> headers){
-        HashSet<String> keywords = new HashSet<>();
-        keywords.add("Alert");
+    public void createNotification(List<Header> headers, HashSet<String> keywords){
+
         List<Header> importantEmails = checkEmail(headers, keywords);
         if (importantEmails!=null && importantEmails.size()!=0) {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.channel_id))

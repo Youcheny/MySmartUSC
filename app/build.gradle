@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storeFile file('../debug.keystore')
+            storePassword 'android'
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.example.youchengye.csci_310_project_mysmartusc"
@@ -15,8 +23,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            signingConfig signingConfigs.config
+        }
     }
-
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         pickFirst 'META-INF/LICENSE.txt'
@@ -35,7 +45,7 @@ dependencies {
     // for firebase
     implementation 'com.google.android.gms:play-services-auth:15.0.1'
     implementation 'com.google.apis:google-api-services-gmail:v1-rev96-1.25.0'
-    implementation'com.sun.mail:android-mail:1.6.2'
+    implementation 'com.sun.mail:android-mail:1.6.2'
     implementation 'com.sun.mail:android-activation:1.6.2'
     implementation 'org.jsoup:jsoup:1.11.3'
 }

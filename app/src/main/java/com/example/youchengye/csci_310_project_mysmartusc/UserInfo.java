@@ -79,6 +79,8 @@ public class UserInfo {
     private boolean contentWhiteListChanged;
     private boolean contentStarListChanged;
     private boolean importantEmailAddressListChanged;
+
+
     public void Initialize(String username) {
         this.username = username;
         titleBlackListChanged = false;
@@ -110,10 +112,6 @@ public class UserInfo {
                         }
                     }
                 });
-
-
-
-
     }
     // getters and setters
     public List<String> getTitleBlackList() {return titleBlackList;}
