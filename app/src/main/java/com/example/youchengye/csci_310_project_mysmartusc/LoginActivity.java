@@ -293,10 +293,15 @@ public class LoginActivity extends AppCompatActivity implements
         List<String> contentWhiteList = UserInfo.getInstance().getContentWhiteList();
         List<String> importantEmailAddresses = UserInfo.getInstance().getImportantEmailAddressList();
         List<Header> importantEmails = new ArrayList<>();
+        List<String> titleStarList = UserInfo.getInstance().getTitleStarList();
+        List<String> cotentStarList = UserInfo.getInstance().getContentStarList();
+        List<String>  titleBlackList = UserInfo.getInstance().getTitleBlackList();
+        List<String> contentBlackList  =UserInfo.getInstance().getContentBlackList();
+
         Log.w("titlewhiltelist", titleWhiteList.toString());
         Log.w("contentWhiteList", contentWhiteList.toString());
         Set<Header> checkers = new HashSet<>();
-        for (Header h:headers){
+        for (Header h:headers) {
             Log.w("headers", h.from);
             for (String keyword:titleWhiteList){
                 if (h.subject.toLowerCase().contains(keyword.toLowerCase())){
@@ -324,6 +329,48 @@ public class LoginActivity extends AppCompatActivity implements
                         importantEmails.add(h);
                         checkers.add(h);
                         break;
+                    }
+                }
+            }
+
+            // check if a email should be starred
+            Boolean starred = false;
+            for (String keyword : titleStarList){
+                if(h.subject.toLowerCase().contains(keyword.toLowerCase())){
+                    EmailList.getInstance().markAsStar(h.messageId);
+                    starred = true;
+                    break;
+                }
+            }
+
+            if(!starred){ // check content for star keyword
+                for(String keyword : cotentStarList) {
+                    if(h.content.toLowerCase().contains(keyword.toLowerCase())) {
+                        EmailList.getInstance().markAsStar(h.messageId);
+                        starred = true;
+                        break;
+                    }
+                }
+            }
+
+            // The email contains neither keywords in Whitelist nor Starlist,
+            // but contains keywords in Blacklist. User will see the email marked as read
+            if(!checkers.contains(h) && !starred){
+                Boolean read = false;
+                for(String keyword : titleBlackList){
+                    if(h.subject.toLowerCase().contains(keyword.toLowerCase())){
+                        EmailList.getInstance().markAsRead(h.messageId);
+                        read = true;
+                        break;
+                    }
+                }
+
+                if(!read){ // check content for blacklist keyword
+                    for(String keyword : contentBlackList){
+                        if(h.content.toLowerCase().contains(keyword.toLowerCase())){
+                            EmailList.getInstance().markAsRead(h.messageId);
+                            break;
+                        }
                     }
                 }
             }
