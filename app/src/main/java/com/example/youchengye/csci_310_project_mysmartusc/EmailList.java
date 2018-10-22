@@ -190,7 +190,7 @@ public class EmailList {
         return result;
     }
 
-    private void markAsRead(String messageId){
+    public void markAsRead(String messageId){
         List<String> labelsToRemove = new ArrayList<String>();
         labelsToRemove.add("UNREAD");
         ModifyMessageRequest mods = new ModifyMessageRequest().setRemoveLabelIds(labelsToRemove);
@@ -204,7 +204,7 @@ public class EmailList {
 
     }
 
-    private void markAsStar(String messageId){
+    public void markAsStar(String messageId){
         List<String> labelsToAdd = new ArrayList<String>();
         labelsToAdd.add("STARRED");
         ModifyMessageRequest mods = new ModifyMessageRequest().setAddLabelIds(labelsToAdd);
