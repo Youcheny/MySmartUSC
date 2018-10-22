@@ -20,7 +20,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Scope;
@@ -38,7 +37,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -58,7 +56,6 @@ public class LoginActivity extends AppCompatActivity implements
 
     private GoogleSignInClient mGoogleSignInClient;
     private TextView mStatusTextView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,11 +118,11 @@ public class LoginActivity extends AppCompatActivity implements
             String authCode = account.getServerAuthCode();
 //            String idToken = account.getIdToken();
             String id = account.getId();
-            Log.w(TAG, "id: "+id);
+//            Log.w(TAG, "id: "+id);
             EmailList.getInstance().setId(id);
             EmailList.getInstance().setLogin(this);
 //            Log.w(TAG, "idToken: "+idToken);
-            Log.w(TAG, "authCode: "+authCode);
+//            Log.w(TAG, "authCode: "+authCode);
             OkHttpClient client = new OkHttpClient();
             RequestBody requestBody = new FormEncodingBuilder()
                     .add("grant_type", "authorization_code")
@@ -185,9 +182,7 @@ public class LoginActivity extends AppCompatActivity implements
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        // [START_EXCLUDE]
                         updateUI(null);
-                        // [END_EXCLUDE]
                     }
                 });
     }
@@ -199,9 +194,7 @@ public class LoginActivity extends AppCompatActivity implements
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        // [START_EXCLUDE]
                         updateUI(null);
-                        // [END_EXCLUDE]
                     }
                 });
     }
@@ -239,9 +232,9 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-    public void createNotification(List<Header> headers){
-        List<Header> importantEmails = checkEmail(headers);
-
+    public void createNotification(List<Header> headers, List<Header> oldHeaders){
+        List<Header> newEmails = checkNew(headers, oldHeaders);
+        List<Header> importantEmails = checkEmail(newEmails);
         if (importantEmails!=null && importantEmails.size()!=0) {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.channel_id))
                     .setSmallIcon(R.drawable.ic_channel_icon)
@@ -285,11 +278,10 @@ public class LoginActivity extends AppCompatActivity implements
         List<String>  titleBlackList = UserInfo.getInstance().getTitleBlackList();
         List<String> contentBlackList  =UserInfo.getInstance().getContentBlackList();
 
-        Log.w("titlewhiltelist", titleWhiteList.toString());
-        Log.w("contentWhiteList", contentWhiteList.toString());
+//        Log.w("titlewhiltelist", titleWhiteList.toString());
+//        Log.w("contentWhiteList", contentWhiteList.toString());
         Set<Header> checkers = new HashSet<>();
         for (Header h:headers) {
-            Log.w("headers", h.from);
             for (String keyword:titleWhiteList){
                 if (h.subject.toLowerCase().contains(keyword.toLowerCase())){
                     if (!checkers.contains(h)){
@@ -364,6 +356,22 @@ public class LoginActivity extends AppCompatActivity implements
 
         }
         return importantEmails;
+    }
+
+    private List<Header> checkNew(List<Header> headers, List<Header> oldHeaders){
+        List<Header> newEmails = new ArrayList<>();
+        if (oldHeaders.size() == 0){
+            return headers;
+        }else{
+            for (Header h: headers){
+                if (!h.messageId.equals(oldHeaders.get(0).messageId)){
+                    newEmails.add(h);
+                }else{
+                    break;
+                }
+            }
+        }
+        return newEmails;
     }
 
 

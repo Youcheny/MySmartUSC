@@ -1,10 +1,5 @@
 package com.example.youchengye.csci_310_project_mysmartusc;
 
-import android.app.NotificationManager;
-import android.os.Build;
-import android.os.PowerManager;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -16,8 +11,7 @@ import com.google.api.services.gmail.model.Message;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+
 import java.util.List;
 import java.util.Properties;
 
@@ -50,7 +44,7 @@ public class EmailList {
     private final int NOTIFICATION_ID = 1;
     private String channel_id;
     private LoginActivity login;
-
+    private List<Header> oldHeaders = new ArrayList<>();
     private EmailList(){
         this.credential = null;
         this.service = null;
@@ -81,11 +75,11 @@ public class EmailList {
                     for (Header header : headers) {
                         Log.i(TAG, "subject: " + header.subject);
                         Log.i(TAG, "from: " + header.from);
-                        //                Log.i(TAG, "snippet: "+header.snippet);
                         Log.i(TAG, "messageId: " + header.messageId);
                         Log.i(TAG, "content: " + header.content);
                     }
-                    login.createNotification(headers);
+                    login.createNotification(headers, oldHeaders);
+                    oldHeaders = headers;
                 } catch (IOException | MessagingException e) {
                     e.printStackTrace();
                 }
@@ -104,12 +98,12 @@ public class EmailList {
 
     public static EmailList getInstance(){
         if(singleInstance!=null){
-            Log.w(TAG, "NOT EMPTY!!!");
-            Log.w(TAG, "accessToken: "+singleInstance.accessToken);
+//            Log.w(TAG, "NOT EMPTY!!!");
+//            Log.w(TAG, "accessToken: "+singleInstance.accessToken);
             return singleInstance;
         }
         else{
-            Log.w(TAG, "EMPTY!!!");
+//            Log.w(TAG, "EMPTY!!!");
             singleInstance = new EmailList();
             return singleInstance;
         }
@@ -128,8 +122,8 @@ public class EmailList {
 //        service = new Gmail.Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance(), credential)
 //                .setApplicationName("MySmartUSC").build();
 //        initialize(accessToken);
-        Log.w(TAG, "service: "+service);
-        Log.w(TAG, "userId: "+userId);
+//        Log.w(TAG, "service: "+service);
+//        Log.w(TAG, "userId: "+userId);
         ListMessagesResponse response = service.users().messages().list(userId).setMaxResults((long) 8).execute();
         List<Message> messages = new ArrayList<>();
 
@@ -240,8 +234,8 @@ public class EmailList {
         ModifyMessageRequest mods = new ModifyMessageRequest().setRemoveLabelIds(labelsToRemove);
         try{
             Message message = service.users().messages().modify(userId, messageId, mods).execute();
-            System.out.println("Message id: " + message.getId());
-            System.out.println(message.toPrettyString());
+//            System.out.println("Message id: " + message.getId());
+//            System.out.println(message.toPrettyString());
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -254,8 +248,8 @@ public class EmailList {
         ModifyMessageRequest mods = new ModifyMessageRequest().setAddLabelIds(labelsToAdd);
         try{
             Message message = service.users().messages().modify(userId, messageId, mods).execute();
-            System.out.println("Message id: " + message.getId());
-            System.out.println(message.toPrettyString());
+//            System.out.println("Message id: " + message.getId());
+//            System.out.println(message.toPrettyString());
         }catch(IOException e){
             e.printStackTrace();
         }
