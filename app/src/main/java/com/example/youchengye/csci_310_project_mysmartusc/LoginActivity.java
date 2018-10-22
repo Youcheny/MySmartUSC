@@ -173,11 +173,17 @@ public class LoginActivity extends AppCompatActivity implements
             });
             // Signed in successfully, show authenticated UI.
             updateUI(account);
+            // jump to KeywordsAddressModification page
+            Thread.sleep(1000);
+            Intent gotoKeywordsPage = new Intent(this, KeywordAddressModificationActivity.class);
+            startActivity(gotoKeywordsPage);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
             updateUI(null);
+        } catch (InterruptedException e){
+            e.printStackTrace();
         }
     }
     // [END handleSignInResult]
