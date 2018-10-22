@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.mail.MessagingException;
 
@@ -161,13 +162,8 @@ public class LoginActivity extends AppCompatActivity implements
 //                        Log.i(TAG, "access_token: "+access_token);
                         EmailList.getInstance().initialize(access_token);
                         List<Header> headers = EmailList.getInstance().listMessages();
+                        createNotification(headers);
 
-                        /**
-                         * prepare to delete, just for notification testing
-                         */
-                        HashSet<String> keywords = new HashSet();
-                        keywords.add("detailed");
-                        createNotification(headers, keywords);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     } catch (MessagingException e) {
@@ -223,7 +219,7 @@ public class LoginActivity extends AppCompatActivity implements
 
     private void updateUI(@Nullable GoogleSignInAccount account) {
         if (account != null) {
-            mStatusTextView.setText(getString(R.string.signed_in_fmt, account.getDisplayName()));
+            mStatusTextView.setText(getString(R.string.signed_in_fmt, account.getDisplayName())+"\n Waiting for Emails...");
 
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
             findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
@@ -250,9 +246,9 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-    public void createNotification(List<Header> headers, HashSet<String> keywords){
+    public void createNotification(List<Header> headers){
+        List<Header> importantEmails = checkEmail(headers);
 
-        List<Header> importantEmails = checkEmail(headers, keywords);
         if (importantEmails!=null && importantEmails.size()!=0) {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.channel_id))
                     .setSmallIcon(R.drawable.ic_channel_icon)
@@ -278,6 +274,7 @@ public class LoginActivity extends AppCompatActivity implements
         String contentText = "From "+ header.from + ": "+header.snippet;
         return contentText;
     }
+
     private void deleteNotificationChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
@@ -285,18 +282,107 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-    private List<Header> checkEmail(List<Header> headers, HashSet<String> keywords){
+    private List<Header> checkEmail(List<Header> headers){
+        List<String> titleWhiteList = UserInfo.getInstance().getTitleWhiteList();
+        List<String> contentWhiteList = UserInfo.getInstance().getContentWhiteList();
+        List<String> importantEmailAddresses = UserInfo.getInstance().getImportantEmailAddressList();
         List<Header> importantEmails = new ArrayList<>();
+        Log.w("titlewhiltelist", titleWhiteList.toString());
+        Log.w("contentWhiteList", contentWhiteList.toString());
+        Set<Header> checkers = new HashSet<>();
         for (Header h:headers){
-            for (String keyword:keywords){
-                keyword = keyword.toLowerCase();
-                if (h.from.toLowerCase().contains(keyword) || h.subject.toLowerCase().contains(keyword)
-                        || h.snippet.toLowerCase().contains(keyword) || h.content.toLowerCase().contains(keyword)){
-                    importantEmails.add(h);
+            Log.w("headers", h.from);
+            for (String keyword:titleWhiteList){
+                if (h.subject.toLowerCase().contains(keyword.toLowerCase())){
+                    if (!checkers.contains(h)){
+                        importantEmails.add(h);
+                        checkers.add(h);
+                    }
+                    break;
                 }
             }
+
+            for (String keyword: contentWhiteList){
+                if (h.content.toLowerCase().contains(keyword.toLowerCase())){
+                    if (!checkers.contains(h)){
+                        importantEmails.add(h);
+                        checkers.add(h);
+                    }
+                    break;
+                }
+            }
+
+            for (String keyword: importantEmailAddresses){
+                if (h.from.toLowerCase().contains(keyword.toLowerCase())){
+                    if (!checkers.contains(h)){
+                        importantEmails.add(h);
+                        checkers.add(h);
+                        break;
+                    }
+                }
+            }
+
         }
         return importantEmails;
+    }
+
+    // for testing notification
+    public void onClickNotification(View view) throws IOException, MessagingException {
+//        try {
+//            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+//            if (account == null){
+//                Log.w("account","account is null");
+//            }else{
+//                Log.w("account", account.getServerAuthCode());
+//            }
+//            String authCode = account.getServerAuthCode();
+////            String idToken = account.getIdToken();
+//            String id = account.getId();
+//            Log.w(TAG, "id: "+id);
+//            EmailList.getInstance().setId(id);
+////            Log.w(TAG, "idToken: "+idToken);
+//            Log.w(TAG, "authCode: "+authCode);
+//            OkHttpClient client = new OkHttpClient();
+//            RequestBody requestBody = new FormEncodingBuilder()
+//                    .add("grant_type", "authorization_code")
+//                    .add("client_id", getString(R.string.server_client_id))
+//                    .add("client_secret", getString(R.string.client_secret))
+//                    .add("redirect_uri","")
+//                    .add("code", authCode)
+//                    .build();
+//            final Request request = new Request.Builder()
+//                    .url("https://www.googleapis.com/oauth2/v4/token")
+//                    .post(requestBody)
+//                    .build();
+//            client.newCall(request).enqueue(new Callback() {
+//                @Override
+//                public void onFailure(final Request request, final IOException e) {
+//                    Log.e(TAG, e.toString());
+//                }
+//
+//                @Override
+//                public void onResponse(Response response) throws IOException {
+//                    try {
+//                        JSONObject jsonObject = new JSONObject(response.body().string());
+//                        final String message = jsonObject.toString(5);
+////                        Log.i(TAG, message);
+//                        final String access_token = jsonObject.getString("access_token");
+////                        Log.i(TAG, "access_token: "+access_token);
+//                        EmailList.getInstance().initialize(access_token);
+//
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    } catch (MessagingException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            });
+//            // Signed in successfully, show authenticated UI.
+//            updateUI(account);
+//        }
+
+        List<Header> headers = EmailList.getInstance().listMessages();
+        createNotification(headers);
     }
 
 }

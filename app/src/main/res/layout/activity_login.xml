@@ -100,12 +100,22 @@
                 android:theme="@style/ThemeOverlay.MyDarkButton" />
 
             <Button
+                android:id="@+id/testNotification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onClickNotification"
+                android:padding="10dp"
+                android:text="Test Notify"
+                android:theme="@style/ThemeOverlay.MyDarkButton" />
+
+            <Button
                 android:id="@+id/disconnect_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/disconnect"
                 android:theme="@style/ThemeOverlay.MyDarkButton" />
+
         </LinearLayout>
 
     </RelativeLayout>

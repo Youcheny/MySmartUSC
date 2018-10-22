@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     }
     // --- remove before release!
 
+
     private void createNotificationChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             String name = getString(R.string.channel_name);

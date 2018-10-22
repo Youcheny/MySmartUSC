@@ -51,11 +51,11 @@ public class EmailList {
         try {
             List<Header> headers = EmailList.getInstance().listMessages();
             for(Header header:headers){
-                Log.i(TAG, "subject: "+header.subject);
-                Log.i(TAG, "from: "+header.from);
-                Log.i(TAG, "snippet: "+header.snippet);
-                Log.i(TAG, "messageId: "+header.messageId);
-                Log.i(TAG, "content: "+header.content);
+//                Log.i(TAG, "subject: "+header.subject);
+//                Log.i(TAG, "from: "+header.from);
+//                Log.i(TAG, "snippet: "+header.snippet);
+//                Log.i(TAG, "messageId: "+header.messageId);
+//                Log.i(TAG, "content: "+header.content);
             }
         } catch (IOException e) {
             e.printStackTrace();
