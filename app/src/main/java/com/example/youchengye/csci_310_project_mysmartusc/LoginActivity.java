@@ -127,8 +127,6 @@ public class LoginActivity extends AppCompatActivity implements
 //            Log.w(TAG, "id: "+id);
             EmailList.getInstance().setId(id);
             EmailList.getInstance().setLogin(this);
-//            Log.w(TAG, "idToken: "+idToken);
-//            Log.w(TAG, "authCode: "+authCode);
             OkHttpClient client = new OkHttpClient();
             RequestBody requestBody = new FormEncodingBuilder()
                     .add("grant_type", "authorization_code")
@@ -152,9 +150,7 @@ public class LoginActivity extends AppCompatActivity implements
                     try {
                         JSONObject jsonObject = new JSONObject(response.body().string());
                         final String message = jsonObject.toString(5);
-//                        Log.i(TAG, message);
                         final String access_token = jsonObject.getString("access_token");
-//                        Log.i(TAG, "access_token: "+access_token);
                         EmailList.getInstance().initialize(access_token, getString(R.string.channel_id));
                         List<Header> headers = EmailList.getInstance().listMessages();
 //                        createNotification(headers);
@@ -216,7 +212,7 @@ public class LoginActivity extends AppCompatActivity implements
             /**
              * get the users important keywords, username to be change later
              */
-            UserInfo.getInstance().Initialize("youcheny");
+//            UserInfo.getInstance().Initialize("youcheny");
             mStatusTextView.setText(getString(R.string.signed_in_fmt, account.getDisplayName())+"\n Waiting for Emails...");
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
             findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
@@ -246,13 +242,15 @@ public class LoginActivity extends AppCompatActivity implements
     public void createNotification(List<Header> headers, List<Header> oldHeaders){
         List<Header> newEmails = checkNew(headers, oldHeaders);
         List<Header> importantEmails = checkEmail(newEmails);
+        Log.w("importantEmails size", Integer.toString(importantEmails.size()));
         if (importantEmails!=null && importantEmails.size()!=0) {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.channel_id))
                     .setSmallIcon(R.drawable.ic_channel_icon)
                     .setContentTitle("Important Emails")
-                    .setContentText(createContentText(importantEmails.get(0)))
+//                    .setContentText(createContentText(importantEmails.get(0)))
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
             PowerManager powerManager = (PowerManager) this.getSystemService(POWER_SERVICE);
 
@@ -263,7 +261,12 @@ public class LoginActivity extends AppCompatActivity implements
                 wl_cpu.acquire(10000);
             }
 
-            notificationManager.notify(NOTIFICATION_ID, builder.build());
+
+
+            for (int i=importantEmails.size()-1; i>=0; i--){
+                builder.setContentText(createContentText(importantEmails.get(i)));
+                notificationManager.notify(i, builder.build());
+            }
         }
     }
 
