@@ -259,7 +259,14 @@ public class LoginActivity extends AppCompatActivity implements
             }
 
             for (int i=importantEmails.size()-1; i>=0; i--){
-                builder.setContentText(createContentText(importantEmails.get(i)));
+                builder.setSmallIcon(R.drawable.usc)
+                        .setStyle(new NotificationCompat.BigTextStyle()
+                                .setSummaryText(importantEmails.get(i).from)
+                                .setBigContentTitle(importantEmails.get(i).subject)
+                                .bigText(importantEmails.get(i).content))
+                        .setContentTitle(importantEmails.get(i).subject) // this should replace subject with sender in brief
+                        .setContentText(importantEmails.get(i).content);
+
                 notificationManager.notify(i, builder.build());
             }
         }
