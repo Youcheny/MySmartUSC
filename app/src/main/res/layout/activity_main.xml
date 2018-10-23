@@ -21,17 +21,6 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <Button
-            android:id="@+id/testtesttest"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onClickKeywordsModification"
-            android:padding="10dp"
-            android:text="Test Keywords Modification (Delete before release)"
-            android:theme="@style/AppTheme.Button" />
-
-
-
-        <Button
             android:id="@+id/login"
             android:layout_width="150dp"
             android:layout_height="50dp"
