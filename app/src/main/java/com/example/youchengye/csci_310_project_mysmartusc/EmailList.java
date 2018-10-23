@@ -88,9 +88,6 @@ public class EmailList {
 
         executor.scheduleAtFixedRate(periodicTask, 0, 5, TimeUnit.SECONDS);
     }
-//    public void initialize() throws IOException, MessagingException {
-//        initialize(accessToken);
-//    }
 
     public void setId(String id){
         this.userId = id;

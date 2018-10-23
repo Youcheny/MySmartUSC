@@ -181,9 +181,6 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
                 UserInfo.getInstance().Initialize(username);
             }
             Log.w("intent","not null");
-
-        }else{
-            Log.w("intent","null");
         }
 
     }
