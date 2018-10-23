@@ -99,14 +99,6 @@
                 android:text="@string/sign_out"
                 android:theme="@style/ThemeOverlay.MyDarkButton" />
 
-            <Button
-                android:id="@+id/testNotification"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="onClickNotification"
-                android:padding="10dp"
-                android:text="Test Notify"
-                android:theme="@style/ThemeOverlay.MyDarkButton" />
 
             <Button
                 android:id="@+id/disconnect_button"

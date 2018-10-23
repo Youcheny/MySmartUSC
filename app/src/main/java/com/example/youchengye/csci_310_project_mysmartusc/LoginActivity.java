@@ -165,7 +165,7 @@ public class LoginActivity extends AppCompatActivity implements
 
 //            Thread.sleep(1000);
             Intent gotoKeywordsPage = new Intent(this, KeywordAddressModificationActivity.class);
-            gotoKeywordsPage.putExtra("username", id);
+            gotoKeywordsPage.putExtra("username", account.getEmail());
             startActivity(gotoKeywordsPage);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
@@ -259,8 +259,6 @@ public class LoginActivity extends AppCompatActivity implements
                 PowerManager.WakeLock wl_cpu = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"MH24_SCREENLOCK");
                 wl_cpu.acquire(10000);
             }
-
-
 
             for (int i=importantEmails.size()-1; i>=0; i--){
                 builder.setContentText(createContentText(importantEmails.get(i)));
