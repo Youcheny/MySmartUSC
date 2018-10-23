@@ -86,7 +86,7 @@ public class EmailList {
             }
         };
 
-        executor.scheduleAtFixedRate(periodicTask, 0, 10, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(periodicTask, 0, 5, TimeUnit.SECONDS);
     }
 //    public void initialize() throws IOException, MessagingException {
 //        initialize(accessToken);

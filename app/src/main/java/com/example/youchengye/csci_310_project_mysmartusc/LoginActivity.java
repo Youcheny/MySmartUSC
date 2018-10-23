@@ -181,9 +181,7 @@ public class LoginActivity extends AppCompatActivity implements
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
-    // [END signIn]
 
-    // [START signOut]
     private void signOut() {
         mGoogleSignInClient.signOut()
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
@@ -308,7 +306,7 @@ public class LoginActivity extends AppCompatActivity implements
             }
 
             for (String keyword: importantEmailAddresses){
-                if (h.from.toLowerCase().contains(keyword.toLowerCase())){
+                if (h.from.toLowerCase().equals(keyword.toLowerCase())){
                     if (!checkers.contains(h)){
                         importantEmails.add(h);
                         checkers.add(h);
