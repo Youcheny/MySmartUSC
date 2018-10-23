@@ -247,7 +247,6 @@ public class LoginActivity extends AppCompatActivity implements
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.channel_id))
                     .setSmallIcon(R.drawable.ic_channel_icon)
                     .setContentTitle("Important Emails")
-//                    .setContentText(createContentText(importantEmails.get(0)))
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
@@ -275,12 +274,6 @@ public class LoginActivity extends AppCompatActivity implements
         return contentText;
     }
 
-    private void deleteNotificationChannel(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.deleteNotificationChannel(getString(R.string.channel_id));
-        }
-    }
 
     private List<Header> checkEmail(List<Header> headers){
         List<String> titleWhiteList = UserInfo.getInstance().getTitleWhiteList();

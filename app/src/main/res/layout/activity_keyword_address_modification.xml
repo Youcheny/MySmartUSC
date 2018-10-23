@@ -32,13 +32,14 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
-            android:background="@drawable/red_rounded_button_background"
+
             android:onClick="onClickShowList"
             android:padding="10dp"
             android:text="Show this List"
             android:layout_gravity="left"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinner" />
+            app:layout_constraintTop_toBottomOf="@+id/spinner"
+            android:theme="@style/AppTheme.Button"/>
 
         <Button
             android:id="@+id/modifyList"
@@ -48,24 +49,26 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
-            android:background="@drawable/red_rounded_button_background"
+
             android:onClick="onClickModifyList"
             android:padding="10dp"
             android:text="Modify List"
             android:layout_gravity="right"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinner" />
+            app:layout_constraintTop_toBottomOf="@+id/spinner"
+            android:theme="@style/AppTheme.Button"/>
 
         <Button
             android:id="@+id/addKeyword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/red_rounded_button_background"
+
             android:text="+ Add New Keyword"
             android:visibility="gone"
-            android:onClick="onClickAddKeyword"/>
+            android:onClick="onClickAddKeyword"
+            android:theme="@style/AppTheme.Button"/>
 
     </LinearLayout>
 
