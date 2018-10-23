@@ -2,10 +2,10 @@
     <string name="app_name">MySmartUSC</string>
     <string name="login_button_text">Login to Gmail</string>
     <string-array name="keywords_modification_list_choices">
-        <item>Title Ignore List</item>
+        <item>Title Mark As Read List</item>
         <item>Title Important List</item>
         <item>Title Star List</item>
-        <item>Content Ignore List</item>
+        <item>Content Mark As Read List</item>
         <item>Content Important List</item>
         <item>Content Star List</item>
         <item>Important Email Addresses List</item>
