@@ -1,6 +1,5 @@
 package com.example.youchengye.csci_310_project_mysmartusc;
 
-import android.util.Log;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -21,7 +20,6 @@ import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 import com.google.api.services.gmail.model.ModifyMessageRequest;
 
 import java.io.ByteArrayInputStream;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -30,9 +28,7 @@ import javax.mail.Session;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-import org.jsoup.Jsoup;
 
-import static android.content.Context.POWER_SERVICE;
 
 public class EmailList {
     private static final String TAG = "EmailList";

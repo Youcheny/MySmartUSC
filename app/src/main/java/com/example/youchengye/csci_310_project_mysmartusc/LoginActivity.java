@@ -1,9 +1,6 @@
 package com.example.youchengye.csci_310_project_mysmartusc;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
@@ -52,10 +49,9 @@ public class LoginActivity extends AppCompatActivity implements
 
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
-    private final int NOTIFICATION_ID = 1;
-
     private GoogleSignInClient mGoogleSignInClient;
     private TextView mStatusTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,9 +118,8 @@ public class LoginActivity extends AppCompatActivity implements
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             String authCode = account.getServerAuthCode();
-//            String idToken = account.getIdToken();
             String id = account.getId();
-//            Log.w(TAG, "id: "+id);
+
             EmailList.getInstance().setId(id);
             EmailList.getInstance().setLogin(this);
             OkHttpClient client = new OkHttpClient();
@@ -174,9 +169,7 @@ public class LoginActivity extends AppCompatActivity implements
             updateUI(null);
         }
     }
-    // [END handleSignInResult]
 
-    // [START signIn]
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -210,7 +203,6 @@ public class LoginActivity extends AppCompatActivity implements
             /**
              * get the users important keywords, username to be change later
              */
-//            UserInfo.getInstance().Initialize("youcheny");
             mStatusTextView.setText(getString(R.string.signed_in_fmt, account.getDisplayName())+"\n Waiting for Emails...");
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
             findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
