@@ -9,7 +9,7 @@ https://github.com/Youcheny/MySmartUSC
 1. Click LOGIN TO EMAIL
 2. Click SIGN IN
 3. The program automatically jump to keywords modification page and allows you to input keywords.
-4. Cilck "show this list" everytime after you sign in. 
+4. Click "SHOW THIS LIST" everytime after you sign in. If clicking it for the first time did not work, click it a few times more. It may be that the app is still retrieving your previous saved keywords from the database. We can later fix this by adding a spinning "LOADING" icon.
 5. There are seven lists
 	* Title ignore list: if a word such as "survey" is in this list, all future emails with this title will be marked as read and no notification will be sent.
 	* Title important list: all future emails contain important keywords in their titles will trigger notification
