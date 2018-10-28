@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentHostCallback;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -115,6 +116,8 @@ public class LoginActivity extends AppCompatActivity implements
 
     // [START handleSignInResult]
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        View rootView = getWindow().getDecorView().getRootView();
+
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             String authCode = account.getServerAuthCode();
@@ -155,9 +158,9 @@ public class LoginActivity extends AppCompatActivity implements
                     }
                 }
             });
-            // Signed in successfully, show authenticated UI.
-            updateUI(account);
 
+                    // Signed in successfully, show authenticated UI.
+            updateUI(account);
 //            Thread.sleep(1000);
             Intent gotoKeywordsPage = new Intent(this, KeywordAddressModificationActivity.class);
             gotoKeywordsPage.putExtra("username", account.getEmail());
@@ -173,6 +176,7 @@ public class LoginActivity extends AppCompatActivity implements
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+
     }
 
     private void signOut() {

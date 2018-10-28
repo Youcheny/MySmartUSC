@@ -8,6 +8,11 @@ import javax.mail.internet.*;
 public class EmailTools {
     public static final String from = "mysmartusc123@gmail.com";
     public static final String password = "smartusc123!";
+
+    /**
+     * important!!!!!!!!
+     * change to tester's email address
+     */
     public static String to = "ruoxijia@usc.edu";
 
 
