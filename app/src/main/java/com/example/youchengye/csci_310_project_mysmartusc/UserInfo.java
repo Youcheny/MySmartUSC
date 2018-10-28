@@ -253,4 +253,30 @@ public class UserInfo {
         userRef.set(changes, SetOptions.merge());
     }
 
+    // Clear function
+    public void clear() {
+        titleBlackList.clear();
+        titleWhiteList.clear();
+        titleStarList.clear();
+        contentBlackList.clear();
+        contentWhiteList.clear();
+        contentStarList.clear();
+        importantEmailAddressList.clear();
+        titleBlackSet.clear();
+        titleWhiteSet.clear();
+        titleStarSet.clear();
+        contentBlackSet.clear();
+        contentWhiteSet.clear();
+        contentStarSet.clear();
+        importantEmailAddressSet.clear();
+        titleBlackListChanged = false;
+        titleWhiteListChanged = false;
+        titleStarListChanged = false;
+        contentBlackListChanged = false;
+        contentWhiteListChanged = false;
+        contentStarListChanged = false;
+        importantEmailAddressListChanged = false;
+        username = "";
+
+    }
 }
