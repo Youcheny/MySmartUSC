@@ -194,13 +194,13 @@ public class UserInfo {
     }
 
     // Keywords Modification
-    public void addTitleBlackList(String keyword) {titleBlackList.add(keyword); titleBlackSet.add(keyword); titleBlackListChanged = true;}
-    public void addTitleWhiteList(String keyword) {titleWhiteList.add(keyword); titleWhiteSet.add(keyword); titleWhiteListChanged = true;}
-    public void addTitleStarList(String keyword) {titleStarList.add(keyword); titleStarSet.add(keyword); titleStarListChanged = true;}
-    public void addContentBlackList(String keyword) {contentBlackList.add(keyword); contentBlackSet.add(keyword); contentBlackListChanged = true;}
-    public void addContentWhiteList(String keyword) {contentWhiteList.add(keyword); contentWhiteSet.add(keyword); contentWhiteListChanged = true;}
-    public void addContentStarList(String keyword) {contentStarList.add(keyword); contentStarSet.add(keyword); contentStarListChanged = true;}
-    public void addImportantEmailAddressList(String keyword) {importantEmailAddressList.add(keyword); importantEmailAddressSet.add(keyword); importantEmailAddressListChanged = true;}
+    public void addTitleBlackList(String keyword) {if (!titleBlackSet.contains(keyword)){titleBlackList.add(keyword); titleBlackSet.add(keyword); titleBlackListChanged = true;}}
+    public void addTitleWhiteList(String keyword) {if (!titleWhiteSet.contains(keyword)){titleWhiteList.add(keyword); titleWhiteSet.add(keyword); titleWhiteListChanged = true;}}
+    public void addTitleStarList(String keyword) {if (!titleStarSet.contains(keyword)){titleStarList.add(keyword); titleStarSet.add(keyword); titleStarListChanged = true;}}
+    public void addContentBlackList(String keyword) {if (!contentBlackSet.contains(keyword)){contentBlackList.add(keyword); contentBlackSet.add(keyword); contentBlackListChanged = true;}}
+    public void addContentWhiteList(String keyword) {if (!contentWhiteSet.contains(keyword)){contentWhiteList.add(keyword); contentWhiteSet.add(keyword); contentWhiteListChanged = true;}}
+    public void addContentStarList(String keyword) {if (!contentStarSet.contains(keyword)){contentStarList.add(keyword); contentStarSet.add(keyword); contentStarListChanged = true;}}
+    public void addImportantEmailAddressList(String keyword) {if (!importantEmailAddressSet.contains(keyword)){importantEmailAddressList.add(keyword); importantEmailAddressSet.add(keyword); importantEmailAddressListChanged = true;}}
     public void removeTitleBlackList(String keyword) {titleBlackList.remove(keyword); titleBlackSet.remove(keyword); titleBlackListChanged = true;}
     public void removeTitleWhiteList(String keyword) {titleWhiteList.remove(keyword); titleWhiteSet.remove(keyword); titleWhiteListChanged = true;}
     public void removeTitleStarList(String keyword) {titleStarList.remove(keyword); titleStarSet.remove(keyword); titleStarListChanged = true;}
