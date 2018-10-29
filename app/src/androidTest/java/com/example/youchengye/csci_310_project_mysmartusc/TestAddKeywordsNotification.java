@@ -85,6 +85,7 @@ public class TestAddKeywordsNotification {
         device.wait(Until.hasObject(By.textContains("Important")), 50000);
 
         assertTrue(device.hasObject(By.textContains("Important")));
+        device.pressHome();
     }
 
     @Test
@@ -95,6 +96,7 @@ public class TestAddKeywordsNotification {
         device.pressHome();
         device.openNotification();
         assertTrue(device.hasObject(By.textContains("Important")));
+        device.pressHome();
     }
 
     @Test
