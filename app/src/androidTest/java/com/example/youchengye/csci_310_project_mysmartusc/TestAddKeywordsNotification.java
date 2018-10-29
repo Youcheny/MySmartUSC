@@ -1,5 +1,6 @@
 package com.example.youchengye.csci_310_project_mysmartusc;
 
+import android.graphics.Rect;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
 import android.support.test.rule.ActivityTestRule;
@@ -10,6 +11,7 @@ import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
+import android.support.test.uiautomator.Until;
 import android.support.v4.app.NotificationManagerCompat;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -33,7 +35,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
-public class TestAddKeywords {
+public class TestAddKeywordsNotification {
     private String TITLE_MARK = "Title Mark";
     private String TITLE_IMPORTANT = "Title Important";
     private String TITLE_STAR = "Title Star";
@@ -45,12 +47,7 @@ public class TestAddKeywords {
     @Rule
     public ActivityTestRule activityRule = new AddKeywordsActivityTestRule(LoginActivity.class);
     public static UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());;
-//    @BeforeClass
-//    public static void setUp() throws Exception{
-//        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-//    }
 
-    //
     @Test
     public void testEnterKeywords() throws UiObjectNotFoundException {
         populateKeywordList();
@@ -80,26 +77,76 @@ public class TestAddKeywords {
         assertEquals(old, newNum );
 
     }
+
+    @Test
+    public void testNotificationReceived() throws UiObjectNotFoundException{
+        device.wait(Until.hasObject(By.text("MySmartUSC")), 500000);
+        device.openNotification();
+        device.wait(Until.hasObject(By.textContains("Important")), 50000);
+
+        assertTrue(device.hasObject(By.textContains("Important")));
+    }
+
+    @Test
+    public void testNotificationOnBackground(){
+        device.wait(Until.hasObject(By.text("MySmartUSC")), 500000);
+        device.openNotification();
+        device.wait(Until.hasObject(By.textContains("Important")), 50000);
+        device.pressHome();
+        device.openNotification();
+        assertTrue(device.hasObject(By.textContains("Important")));
+    }
+
     @Test
     public void testDeleteWord() throws UiObjectNotFoundException{
+        //populate all lists, in case the list is empty
+        populateKeywordList();
+
+        UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
+        if (showList != null){
+            showList.clickAndWaitForNewWindow();
+        }
+
         UiObject modifyButton = device.findObject(new UiSelector().textContains("MODIFY LIST"));
         modifyButton.clickAndWaitForNewWindow();
 
         UiObject listView = device.findObject(new UiSelector().className(ListView.class));
         int old = listView.getChildCount();
+        if (old!=0){
+            //click to remove a keyword
+            UiObject remove = device.findObject(new UiSelector().textContains("remove"));
+            remove.clickAndWaitForNewWindow();
 
-        //click to remove a keyword
-        UiObject remove = device.findObject(new UiSelector().textContains("remove"));
-        remove.clickAndWaitForNewWindow();
+            //confirm to delete
+            UiObject confirm = device.findObject(new UiSelector().textContains("Yes"));
+            confirm.clickAndWaitForNewWindow();
 
-        UiObject newlistView = device.findObject(new UiSelector().className(ListView.class));
-        int newNum = newlistView.getChildCount();
-        assertEquals(old, newNum+1);
+            UiObject newlistView = device.findObject(new UiSelector().className(ListView.class));
+            int newNum = newlistView.getChildCount();
+            assertEquals(old, newNum+1);
+        }
+
     }
+    @Test
+    public void testModifyThenSHowList() throws UiObjectNotFoundException {
 
-    public void testNotification() throws UiObjectNotFoundException{
+        UiObject modifyButton = device.findObject(new UiSelector().textContains("MODIFY LIST"));
+        modifyButton.clickAndWaitForNewWindow();
+
+        UiObject addNewKeywords = device.findObject(new UiSelector().textContains("+ ADD NEW KEYWORD"));
+        Rect rect = addNewKeywords.getBounds();
+
+        UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
+        if (showList != null){
+            showList.clickAndWaitForNewWindow();
+        }
+
+        UiObject addNewKeywordsChanged = device.findObject(new UiSelector().textContains("+ ADD NEW KEYWORD"));
+        Rect rectNew = addNewKeywordsChanged.getBounds();
+        assertEquals(rect.bottom, rectNew.bottom);
+        assertEquals(rect.top, rectNew.top);
+
     }
-
     private void populateKeywordList() throws UiObjectNotFoundException {
         populateEachList("Title Mark As Read List", "Title Mark As Read List", TITLE_MARK);
         populateEachList("Title Mark As Read List", "Title Important List", TITLE_IMPORTANT);

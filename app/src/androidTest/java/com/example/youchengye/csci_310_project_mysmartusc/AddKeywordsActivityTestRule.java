@@ -1,6 +1,7 @@
 package com.example.youchengye.csci_310_project_mysmartusc;
 
 import android.app.Instrumentation;
+import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
@@ -44,7 +45,10 @@ public class AddKeywordsActivityTestRule extends ActivityTestRule {
         // maybe you want to do something here
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
         device = UiDevice.getInstance(instrumentation);
+//        device.pressHome();
+//        openApp("com.example.youchengye.csci_310_project_mysmartusc");
         try {
+//            UiObject log_in_button = device.findObject(new UiSelector().textContains())
             UiObject sign_in_button = device.findObject(new UiSelector().clickable(true));
             sign_in_button.clickAndWaitForNewWindow();
             UiObject log_in = device.findObject(new UiSelector().textContains("@"));
@@ -58,6 +62,13 @@ public class AddKeywordsActivityTestRule extends ActivityTestRule {
 
     @Override
     protected void afterActivityFinished() {
+    }
+
+    private void openApp(String packageName) {
+        Context context = InstrumentationRegistry.getInstrumentation().getContext();
+        Intent intent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        context.startActivity(intent);
     }
 
 
