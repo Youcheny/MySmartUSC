@@ -44,8 +44,8 @@ public class TestLogin {
 
         UiObject log_in = device.findObject(new UiSelector().textContains("@"));
         log_in.clickAndWaitForNewWindow();
-
-        System.out.print("here");
     }
+
+
 
 }
