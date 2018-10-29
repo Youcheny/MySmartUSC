@@ -221,34 +221,20 @@ public class UserInfo {
     // Write to database
     public void writeToDatabase() {
         Map<String, Object> changes = new HashMap<String, Object>();
-        if (titleBlackListChanged) {
-            changes.put("titleBlackList", FieldValue.delete());
+        if (titleBlackListChanged)
             changes.put("titleBlackList", titleBlackList);
-        }
-        if (titleWhiteListChanged) {
-            changes.put("titleWhiteList", FieldValue.delete());
+        if (titleWhiteListChanged)
             changes.put("titleWhiteList", titleWhiteList);
-        }
-        if (titleStarListChanged) {
-            changes.put("titleStarList", FieldValue.delete());
+        if (titleStarListChanged)
             changes.put("titleStarList", titleStarList);
-        }
-        if (contentBlackListChanged) {
-            changes.put("contentBlackList", FieldValue.delete());
+        if (contentBlackListChanged)
             changes.put("contentBlackList", contentBlackList);
-        }
-        if (contentWhiteListChanged) {
-            changes.put("contentWhiteList", FieldValue.delete());
+        if (contentWhiteListChanged)
             changes.put("contentWhiteList", contentWhiteList);
-        }
-        if (contentStarListChanged) {
-            changes.put("contentStarList", FieldValue.delete());
+        if (contentStarListChanged)
             changes.put("contentStarList", contentStarList);
-        }
-        if (importantEmailAddressListChanged) {
-            changes.put("importantEmailAddressList", FieldValue.delete());
+        if (importantEmailAddressListChanged)
             changes.put("importantEmailAddressList", importantEmailAddressList);
-        }
         DocumentReference userRef = FirebaseFirestore.getInstance().collection("Users").document(username);
         userRef.set(changes, SetOptions.merge());
     }
@@ -277,6 +263,5 @@ public class UserInfo {
         contentStarListChanged = false;
         importantEmailAddressListChanged = false;
         username = "";
-
     }
 }

@@ -2,15 +2,21 @@ package com.example.youchengye.csci_310_project_mysmartusc;
 
 import android.support.test.runner.AndroidJUnit4;
 
+import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.Assert.*;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * This test will take around 10 seconds, because we have to wait for database retrieval to complete. Please be patient. Thank you!
+ */
 @RunWith(AndroidJUnit4.class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestUserInfo {
     public void initialize(String username) {
         UserInfo.getInstance().Initialize(username);
@@ -21,7 +27,7 @@ public class TestUserInfo {
      * initialization should be completed in 10 seconds
      */
     @Test
-    public void test_01_testInitializeInTimeLimit() {
+    public void test_01_testInitializationUnderTimeLimit() {
         initialize("test_user_01@usc.edu");
         // wait 10 seconds for database retrieval
         try {
@@ -37,6 +43,7 @@ public class TestUserInfo {
     /**
      * initialization should create an exact copy of the user's information in the database on the UserInfo Singleton object
      */
+    @Test
     public void test_02_testInitializeCorrectness() {
         String[] titleBlackListExpected = {"tbl1", "tbl2", "tbl3", "tbl4", "tbl5"};
         assertArrayEquals(UserInfo.getInstance().getTitleBlackList().toArray(), titleBlackListExpected);
@@ -57,6 +64,7 @@ public class TestUserInfo {
     /**
      * for every keyword retrieved from the database, check*List(keyword) should return true
      */
+    @Test
     public void test_03_testCheckKeywordsTrue() {
         String[] titleBlackListExpected = {"tbl1", "tbl2", "tbl3", "tbl4", "tbl5"};
         for (String keyword : titleBlackListExpected)
@@ -80,10 +88,12 @@ public class TestUserInfo {
         for (String keyword : importantEmailAddressListExpected)
             assertTrue(UserInfo.getInstance().checkImportantEmailAddressList(keyword));
     }
+
     /**
      * for a set of keywords not in the database, check*List(keyword) should return false for every one of them
      */
-    public void test_03_testCheckKeywordsFalse() {
+    @Test
+    public void test_04_testCheckKeywordsFalse() {
         String[] titleBlackListUnexpected = {"tbl6", "tbl7", "tbl8", "tbl9", "tbl10"};
         for (String keyword : titleBlackListUnexpected)
             assertFalse(UserInfo.getInstance().checkTitleBlackList(keyword));
@@ -110,7 +120,8 @@ public class TestUserInfo {
     /**
      * every keyword added should make check*List on that keyword true
      */
-    public void test_04_testAddKeywords() {
+    @Test
+    public void test_05_testAddKeywords() {
         String[] titleBlackListToAdd = {"tbl6", "tbl7", "tbl8", "tbl9", "tbl10"};
         for (String keyword : titleBlackListToAdd)
             UserInfo.getInstance().addTitleBlackList(keyword);
@@ -147,10 +158,12 @@ public class TestUserInfo {
         for (String keyword : importantEmailAddressListUnexpected)
             assertTrue(UserInfo.getInstance().checkImportantEmailAddressList(keyword));
     }
+
     /**
      * removes every keyword just added, then check that check*List(keyword) for every such keyword is false
      */
-    public void testRemoveKeyword() {
+    @Test
+    public void test_06_testRemoveKeyword() {
         String[] titleBlackListToRemove = {"tbl6", "tbl7", "tbl8", "tbl9", "tbl10"};
         for (String keyword : titleBlackListToRemove)
             UserInfo.getInstance().removeTitleBlackList(keyword);
@@ -186,5 +199,22 @@ public class TestUserInfo {
             UserInfo.getInstance().removeImportantEmailAddressList(keyword);
         for (String keyword : importantEmailAddressListToRemove)
             assertFalse(UserInfo.getInstance().checkImportantEmailAddressList(keyword));
+    }
+
+    /**
+     * a case with both adds and removes
+     */
+    @Test
+    public void test_07_testAddAndRemove() {
+        assertFalse(UserInfo.getInstance().checkTitleBlackList("tbltest"));
+        UserInfo.getInstance().addTitleBlackList("tbltest");
+        assertTrue(UserInfo.getInstance().checkTitleBlackList("tbltest"));
+        UserInfo.getInstance().removeTitleBlackList("tbltest");
+        assertFalse(UserInfo.getInstance().checkTitleBlackList("tbltest"));
+        assertFalse(UserInfo.getInstance().checkTitleBlackList("tbltest2"));
+        UserInfo.getInstance().addTitleBlackList("tbltest2");
+        assertTrue(UserInfo.getInstance().checkTitleBlackList("tbltest2"));
+        UserInfo.getInstance().removeTitleBlackList("tbltest2");
+        assertFalse(UserInfo.getInstance().checkTitleBlackList("tbltest2"));
     }
 }
