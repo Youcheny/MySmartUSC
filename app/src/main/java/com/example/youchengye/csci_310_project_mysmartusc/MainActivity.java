@@ -15,6 +15,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         createNotificationChannel();
+
+
     }
 
     public void onClickLogin(View view) {
@@ -47,4 +49,6 @@ public class MainActivity extends AppCompatActivity {
             notificationManager.createNotificationChannel(channel);
         }
     }
+
+
 }

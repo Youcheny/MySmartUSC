@@ -64,13 +64,17 @@ public class TestAddKeywordsNotification {
 
     @Test
     public void testRepeatedKeywords() throws UiObjectNotFoundException, InterruptedException {
-        UiObject listView = device.findObject(new UiSelector().className(ListView.class));
-        int old = listView.getChildCount();
-
         UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
         if (showList != null){
             showList.clickAndWaitForNewWindow();
         }
+        populateEachList("Title Mark As Read List", "Title Mark As Read List", TITLE_MARK);
+
+
+        UiObject listView = device.findObject(new UiSelector().className(ListView.class));
+        device.wait(Until.hasObject(By.text(TITLE_MARK)), 2000);
+        int old = listView.getChildCount();
+
         populateEachList("Title Mark As Read List", "Title Mark As Read List", TITLE_MARK);
         UiObject newlistView = device.findObject(new UiSelector().className(ListView.class));
         int newNum = newlistView.getChildCount();
@@ -101,9 +105,6 @@ public class TestAddKeywordsNotification {
 
     @Test
     public void testDeleteWord() throws UiObjectNotFoundException{
-        //populate all lists, in case the list is empty
-        populateKeywordList();
-
         UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
         if (showList != null){
             showList.clickAndWaitForNewWindow();
@@ -127,6 +128,11 @@ public class TestAddKeywordsNotification {
             int newNum = newlistView.getChildCount();
             assertEquals(old, newNum+1);
         }
+
+    }
+
+    @Test
+    public void testAddLotKeywords() throws UiObjectNotFoundException{
 
     }
     @Test
