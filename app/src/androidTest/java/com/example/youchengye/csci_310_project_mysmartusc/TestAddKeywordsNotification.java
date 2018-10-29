@@ -1,5 +1,7 @@
 package com.example.youchengye.csci_310_project_mysmartusc;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
@@ -36,6 +38,8 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+
 @RunWith(AndroidJUnit4.class)
 public class TestAddKeywordsNotification {
     private String TITLE_MARK = "Title Mark";
@@ -51,7 +55,7 @@ public class TestAddKeywordsNotification {
     public static UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());;
 
     @Test
-    public void testEnterKeywords() throws UiObjectNotFoundException {
+    public void testEnterKeywords() throws UiObjectNotFoundException, InterruptedException {
         populateKeywordList();
     }
 
@@ -199,7 +203,7 @@ public class TestAddKeywordsNotification {
     }
 
     @Test
-    public void testModifyThenSHowList() throws UiObjectNotFoundException {
+    public void testModifyThenShowList() throws UiObjectNotFoundException {
 
         UiObject modifyButton = device.findObject(new UiSelector().textContains("MODIFY LIST"));
         modifyButton.clickAndWaitForNewWindow();
@@ -229,11 +233,16 @@ public class TestAddKeywordsNotification {
     }
 
     private void populateEachList(String lastList, String nextList, String keyword) throws UiObjectNotFoundException {
+        device.wait(Until.hasObject(By.textContains(lastList)),2000);
         UiObject spinner = device.findObject(new UiSelector().textContains(lastList));
+        device.wait(Until.hasObject(By.textContains(lastList)),2000);
         spinner.clickAndWaitForNewWindow();
 
+        device.wait(Until.hasObject(By.textContains(nextList)),2000);
         UiObject selectList = device.findObject(new UiSelector().textContains(nextList));
+        device.wait(Until.hasObject(By.textContains(nextList)),2000);
         selectList.clickAndWaitForNewWindow();
+        device.wait(Until.hasObject(By.textContains(nextList)),2000);
 
         UiObject modifyButton = device.findObject(new UiSelector().textContains("MODIFY LIST"));
         modifyButton.clickAndWaitForNewWindow();
