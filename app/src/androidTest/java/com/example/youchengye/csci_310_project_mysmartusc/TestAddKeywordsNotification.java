@@ -1,5 +1,7 @@
 package com.example.youchengye.csci_310_project_mysmartusc;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
@@ -43,7 +45,7 @@ public class TestAddKeywordsNotification {
     private String CONTENT_IMPORTANT = "Content Important";
     private String CONTENT_STAR = "Content Star";
     private String IMPORTANT_EMAIL = "mysmartusc123@gmail.com";
-
+    private String packagename = "com.example.youchengye.csci_310_project_mysmartusc";
     @Rule
     public ActivityTestRule activityRule = new AddKeywordsActivityTestRule(LoginActivity.class);
     public static UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());;
@@ -102,7 +104,29 @@ public class TestAddKeywordsNotification {
         assertTrue(device.hasObject(By.textContains("Important")));
         device.pressHome();
     }
-
+    @Test
+    public void test03_testAddNewKeyword() {
+        try {
+            UiObject modifyListButton = device.findObject(new UiSelector().textContains("MODIFY LIST"));
+            modifyListButton.waitForExists(100000);
+            modifyListButton.click();
+            UiObject addNewKeywordButton = device.findObject(new UiSelector().textContains("+ ADD NEW KEYWORD"));
+            addNewKeywordButton.waitForExists(100000);
+            addNewKeywordButton.click();
+            UiObject newKeywordEditText = device.findObject(new UiSelector().className("android.widget.EditText"));
+            newKeywordEditText.waitForExists(100000);
+            newKeywordEditText.setText("promotion");
+            addNewKeywordButton = device.findObject(new UiSelector().textStartsWith("ADD NEW KEYWORD"));
+            addNewKeywordButton.waitForExists(100000);
+            addNewKeywordButton.click();
+            Thread.sleep(2000);
+            assertTrue(device.hasObject(By.textContains("promotion")));
+        } catch (UiObjectNotFoundException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
     @Test
     public void testDeleteWord() throws UiObjectNotFoundException{
         UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
@@ -131,10 +155,27 @@ public class TestAddKeywordsNotification {
 
     }
 
+    //able to add a lot of keywords and overload the listview we can see
     @Test
     public void testAddLotKeywords() throws UiObjectNotFoundException{
+        try{
+            UiObject modifyButton = device.findObject(new UiSelector().textContains("MODIFY LIST"));
+            modifyButton.clickAndWaitForNewWindow();
+        }catch (UiObjectNotFoundException e){
+            device.pressHome();
+            openApp(packagename);
+            login();
+            UiObject modifyButton = device.findObject(new UiSelector().textContains("MODIFY LIST"));
+            modifyButton.clickAndWaitForNewWindow();
+        }
 
+        for (int i=0; i<10; i++){
+            addKeyword(Integer.toString(i));
+        }
+        UiObject done = device.findObject(new UiSelector().textContains("DONE!"));
+        done.clickAndWaitForNewWindow();
     }
+
     @Test
     public void testModifyThenSHowList() throws UiObjectNotFoundException {
 
@@ -187,6 +228,34 @@ public class TestAddKeywordsNotification {
 
         UiObject done = device.findObject(new UiSelector().textContains("DONE!"));
         done.clickAndWaitForNewWindow();
+    }
+
+    private void addKeyword(String keyword) throws UiObjectNotFoundException {
+
+
+        UiObject addKeyword = device.findObject(new UiSelector().textContains("+ ADD NEW KEYWORD"));
+        addKeyword.clickAndWaitForNewWindow();
+
+
+        UiObject text = device.findObject(new UiSelector().className(EditText.class));
+        text.setText(keyword);
+
+        UiObject finishAdd = device.findObject(new UiSelector().text("ADD NEW KEYWORD"));
+        finishAdd.clickAndWaitForNewWindow();
+    }
+
+    private void openApp(String packageName) {
+        Context context = InstrumentationRegistry.getInstrumentation().getContext();
+        Intent intent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        context.startActivity(intent);
+    }
+
+    private void login() throws UiObjectNotFoundException {
+        UiObject sign_in_button = device.findObject(new UiSelector().clickable(true));
+        sign_in_button.clickAndWaitForNewWindow();
+        UiObject log_in = device.findObject(new UiSelector().textContains("@"));
+        log_in.clickAndWaitForNewWindow();
     }
 }
 
