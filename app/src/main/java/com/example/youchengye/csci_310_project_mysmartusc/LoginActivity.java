@@ -274,7 +274,7 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
 
-    private List<Header> checkEmail(List<Header> headers){
+    public List<Header> checkEmail(List<Header> headers){
         List<String> titleWhiteList = UserInfo.getInstance().getTitleWhiteList();
         List<String> contentWhiteList = UserInfo.getInstance().getContentWhiteList();
         List<String> importantEmailAddresses = UserInfo.getInstance().getImportantEmailAddressList();
@@ -364,7 +364,7 @@ public class LoginActivity extends AppCompatActivity implements
         return importantEmails;
     }
 
-    private List<Header> checkNew(List<Header> headers, List<Header> oldHeaders){
+    public List<Header> checkNew(List<Header> headers, List<Header> oldHeaders){
         List<Header> newEmails = new ArrayList<>();
         if (oldHeaders.size() == 0){
             return headers;
