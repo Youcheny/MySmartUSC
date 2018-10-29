@@ -122,7 +122,11 @@ public class LoginActivity extends AppCompatActivity implements
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             String authCode = account.getServerAuthCode();
             String id = account.getId();
-
+            String email = account.getEmail();
+            if(!email.split("@")[1].equals("usc.edu")){
+                signOut();
+                return;
+            }
             EmailList.getInstance().setId(id);
             EmailList.getInstance().setLogin(this);
             OkHttpClient client = new OkHttpClient();
