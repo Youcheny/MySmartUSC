@@ -109,21 +109,20 @@ public class TestAddKeywordsNotification {
         device.pressHome();
     }
     @Test
-    public void test03_testAddNewKeyword() {
+    public void testAddNewKeyword() {
+
         try {
             UiObject modifyListButton = device.findObject(new UiSelector().textContains("MODIFY LIST"));
-            modifyListButton.waitForExists(100000);
-            modifyListButton.click();
+            modifyListButton.clickAndWaitForNewWindow();
             UiObject addNewKeywordButton = device.findObject(new UiSelector().textContains("+ ADD NEW KEYWORD"));
-            addNewKeywordButton.waitForExists(100000);
-            addNewKeywordButton.click();
+            addNewKeywordButton.clickAndWaitForNewWindow();
             UiObject newKeywordEditText = device.findObject(new UiSelector().className("android.widget.EditText"));
             newKeywordEditText.waitForExists(100000);
             newKeywordEditText.setText("promotion");
             addNewKeywordButton = device.findObject(new UiSelector().textStartsWith("ADD NEW KEYWORD"));
-            addNewKeywordButton.waitForExists(100000);
-            addNewKeywordButton.click();
+            addNewKeywordButton.clickAndWaitForNewWindow();
             Thread.sleep(2000);
+
             assertTrue(device.hasObject(By.textContains("promotion")));
         } catch (UiObjectNotFoundException e) {
             e.printStackTrace();
@@ -131,15 +130,22 @@ public class TestAddKeywordsNotification {
             e.printStackTrace();
         }
     }
+
+
+
     @Test
     public void testDeleteWord() throws UiObjectNotFoundException{
         UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
         if (showList != null){
             showList.clickAndWaitForNewWindow();
         }
+        deleteWord();
 
         UiObject modifyButton = device.findObject(new UiSelector().textContains("MODIFY LIST"));
         modifyButton.clickAndWaitForNewWindow();
+
+        addKeyword("1");
+        addKeyword("2");
 
         UiObject listView = device.findObject(new UiSelector().className(ListView.class));
         int old = listView.getChildCount();
@@ -152,13 +158,25 @@ public class TestAddKeywordsNotification {
             UiObject confirm = device.findObject(new UiSelector().textContains("Yes"));
             confirm.clickAndWaitForNewWindow();
 
+            UiObject done = device.findObject(new UiSelector().textContains("DONE!"));
+            done.clickAndWaitForNewWindow();
+
             UiObject newlistView = device.findObject(new UiSelector().className(ListView.class));
             int newNum = newlistView.getChildCount();
             assertEquals(old, newNum+1);
         }
-
     }
-
+    @Test
+    public void testDeleteAllWords() throws UiObjectNotFoundException {
+        UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
+        if (showList != null){
+            showList.clickAndWaitForNewWindow();
+        }
+        deleteWord();
+        UiObject listView = device.findObject(new UiSelector().className(ListView.class));
+        int old = listView.getChildCount();
+        assertEquals(0,old);
+    }
     //able to add a lot of keywords and overload the listview we can see
     @Test
     public void testAddLotKeywords() throws UiObjectNotFoundException{
@@ -235,7 +253,7 @@ public class TestAddKeywordsNotification {
     }
 
     private void addKeyword(String keyword) throws UiObjectNotFoundException {
-        UiObject addKeyword = device.findObject(new UiSelector().textContains("+ ADD NEW KEYWORD"));
+        UiObject addKeyword = device.findObject(new UiSelector().textContains("+"));
         addKeyword.clickAndWaitForNewWindow();
 
 
@@ -258,6 +276,24 @@ public class TestAddKeywordsNotification {
         sign_in_button.clickAndWaitForNewWindow();
         UiObject log_in = device.findObject(new UiSelector().textContains("@"));
         log_in.clickAndWaitForNewWindow();
+    }
+
+    private void deleteWord() throws UiObjectNotFoundException {
+        UiObject modifyButton = device.findObject(new UiSelector().textContains("MODIFY LIST"));
+        modifyButton.clickAndWaitForNewWindow();
+        boolean remainingKeywords = true;
+        while (remainingKeywords) {
+            UiObject keywordToRemove = device.findObject(new UiSelector().textContains(" - click to remove"));
+            remainingKeywords = keywordToRemove.exists();
+            if (keywordToRemove.exists()) {
+                keywordToRemove.click();
+                UiObject confirmRemove = device.findObject(new UiSelector().textStartsWith("YES"));
+                confirmRemove.waitForExists(10000);
+                confirmRemove.click();
+            }
+        }
+        UiObject done = device.findObject(new UiSelector().textContains("DONE!"));
+        done.clickAndWaitForNewWindow();
     }
 }
 
