@@ -70,17 +70,21 @@ public class TestAddKeywordsNotification {
         if (showList != null){
             showList.clickAndWaitForNewWindow();
         }
-        populateEachList("Title Mark As Read List", "Title Mark As Read List", TITLE_MARK);
-
+        UiObject modifyButton = device.findObject(new UiSelector().textContains("MODIFY LIST"));
+        modifyButton.clickAndWaitForNewWindow();
+        addKeyword(TITLE_MARK);
 
         UiObject listView = device.findObject(new UiSelector().className(ListView.class));
         device.wait(Until.hasObject(By.text(TITLE_MARK)), 2000);
         int old = listView.getChildCount();
 
-        populateEachList("Title Mark As Read List", "Title Mark As Read List", TITLE_MARK);
+        addKeyword(TITLE_MARK);
         UiObject newlistView = device.findObject(new UiSelector().className(ListView.class));
         int newNum = newlistView.getChildCount();
         assertEquals(old, newNum );
+
+        UiObject done = device.findObject(new UiSelector().textContains("DONE!"));
+        done.clickAndWaitForNewWindow();
 
     }
 
@@ -231,8 +235,6 @@ public class TestAddKeywordsNotification {
     }
 
     private void addKeyword(String keyword) throws UiObjectNotFoundException {
-
-
         UiObject addKeyword = device.findObject(new UiSelector().textContains("+ ADD NEW KEYWORD"));
         addKeyword.clickAndWaitForNewWindow();
 
