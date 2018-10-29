@@ -1,3 +1,5 @@
+package com.example.youchengye.csci_310_project_mysmartusc;
+
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.util.Properties;
@@ -13,7 +15,9 @@ public class EmailTools {
     private static String IMPORTANT_EMAIL = "mysmartusc123@gmail.com";
     public static Boolean controller = false;
 
+
     public static void sendEmail(String from, String to) {
+        final String FROM = from;
         //Get properties object
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com");
@@ -25,9 +29,9 @@ public class EmailTools {
 
         //get Session
         Session session = Session.getDefaultInstance(props,
-                new javax.mail.Authenticator() {
+                new Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(from, password);
+                        return new PasswordAuthentication(FROM, password);
                     }
                 });
 
