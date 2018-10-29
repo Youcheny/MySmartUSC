@@ -8,7 +8,14 @@ import javax.mail.internet.*;
 public class EmailTools {
     public static final String from = "mysmartusc123@gmail.com";
     public static final String password = "smartusc123!";
-
+    private static String TITLE_MARK = "Title Mark";
+    private static String TITLE_IMPORTANT = "Title Important";
+    private static String TITLE_STAR = "Title Star";
+    private static String CONTENT_MARK = "Content Mark";
+    private static String CONTENT_IMPORTANT = "Content Important";
+    private static String CONTENT_STAR = "Content Star";
+    private static String IMPORTANT_EMAIL = "mysmartusc123@gmail.com";
+    public static Boolean controller = false;
     /**
      * important!!!!!!!!
      * change to tester's email address
@@ -16,7 +23,7 @@ public class EmailTools {
     public static String to = "ruoxijia@usc.edu";
 
 
-    public static void sendEmail(String subject, String msg) {
+    public static void sendEmail() {
         //Get properties object
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com");
@@ -34,19 +41,28 @@ public class EmailTools {
                     }
                 });
 
-        //compose message
+            createMessage(session, TITLE_MARK, "should be mark as read");
+            createMessage(session, TITLE_IMPORTANT, "should be notified");
+            createMessage(session,TITLE_STAR,"should be starred");
+            createMessage(session,"Content Mark as Read", CONTENT_MARK);
+            createMessage(session, "Content Important", CONTENT_IMPORTANT);
+            createMessage(session, "Content Star", CONTENT_STAR);
+            createMessage(session, "Important Email Address", IMPORTANT_EMAIL);
+//        }
+    }
+
+    private static void createMessage(Session session, String subject, String content){
+        MimeMessage message = new MimeMessage(session);
         try {
-            MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(from));
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
             message.setSubject(subject);
-            message.setContent(msg, "text/html; charset=utf-8");
-
-            //send message
+            message.setContent(content, "text/html; charset=utf-8");
             Transport.send(message);
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+
     }
 
 }

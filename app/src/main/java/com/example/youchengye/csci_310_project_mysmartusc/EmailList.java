@@ -68,12 +68,6 @@ public class EmailList {
                 // Invoke method(s) to do the work
                 try {
                     List<Header> headers = listMessages();
-//                    for (Header header : headers) {
-//                        Log.i(TAG, "subject: " + header.subject);
-//                        Log.i(TAG, "from: " + header.from);
-//                        Log.i(TAG, "messageId: " + header.messageId);
-//                        Log.i(TAG, "content: " + header.content);
-//                    }
                     login.createNotification(headers, oldHeaders);
                     oldHeaders = headers;
                 } catch (IOException | MessagingException e) {
@@ -83,6 +77,7 @@ public class EmailList {
         };
 
         executor.scheduleAtFixedRate(periodicTask, 0, 5, TimeUnit.SECONDS);
+
     }
 
     public void setId(String id){
