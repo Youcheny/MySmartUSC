@@ -41,12 +41,18 @@ public class TestAddKeywordsNotification {
     public static UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());;
 
 
-
+    /**
+     * add one keyword to each list to prepare for other tests
+     * @throws UiObjectNotFoundException
+     */
     @Test
-    public void test_01_EnterKeywords() throws UiObjectNotFoundException, InterruptedException {
+    public void test_01_EnterKeywords() throws UiObjectNotFoundException {
         populateKeywordList();
     }
 
+    /**
+     * test add one keyword
+     */
     @Test
     public void test_02_AddNewKeyword() {
 
@@ -70,9 +76,10 @@ public class TestAddKeywordsNotification {
     }
 
 
-
-
-
+    /**
+     * test if the listview will appear after press show this list
+     * @throws UiObjectNotFoundException
+     */
     @Test
     public void test_03_ShowList() throws UiObjectNotFoundException {
         UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
@@ -82,6 +89,11 @@ public class TestAddKeywordsNotification {
         assertTrue(device.findObject(new UiSelector().textContains(TITLE_MARK))!=null);
     }
 
+    /**
+     * test if repeated keywords will be added to listview
+     * @throws UiObjectNotFoundException
+     * @throws InterruptedException
+     */
     @Test
     public void test_04_RepeatedKeywords() throws UiObjectNotFoundException, InterruptedException {
         UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
@@ -105,6 +117,10 @@ public class TestAddKeywordsNotification {
 
     }
 
+    /**
+     * test if notification can be revceived and show in notification status bar
+     * @throws UiObjectNotFoundException
+     */
     @Test
     public void test_05_NotificationReceived() throws UiObjectNotFoundException{
         device.wait(Until.hasObject(By.text("MySmartUSC")), 500000);
@@ -115,6 +131,9 @@ public class TestAddKeywordsNotification {
         device.pressHome();
     }
 
+    /**
+     * test if notification can be received when the app is in the background
+     */
     @Test
     public void test_08_NotificationOnBackground(){
         device.wait(Until.hasObject(By.text("MySmartUSC")), 500000);
@@ -127,8 +146,10 @@ public class TestAddKeywordsNotification {
     }
 
 
-
-
+    /**
+     * test if delete one word works
+     * @throws UiObjectNotFoundException
+     */
     @Test
     public void test_09_DeleteWord() throws UiObjectNotFoundException{
         UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
@@ -159,7 +180,10 @@ public class TestAddKeywordsNotification {
         }
     }
 
-    //able to add a lot of keywords and overload the listview we can see
+    /**
+     * test if we add a lot of keywords, the listview should not be overloaded and crush
+     * @throws UiObjectNotFoundException
+     */
     @Test
     public void test_10_AddLotKeywords() throws UiObjectNotFoundException{
         try{
@@ -178,6 +202,10 @@ public class TestAddKeywordsNotification {
         clickDone();
     }
 
+    /**
+     * test if we can delete all keywords from one list
+     * @throws UiObjectNotFoundException
+     */
     @Test
     public void test_11_DeleteAllWords() throws UiObjectNotFoundException {
         if (device.hasObject(By.textContains("SHOW THIS LIST")) ==false){
@@ -194,6 +222,10 @@ public class TestAddKeywordsNotification {
         assertEquals(0,old);
     }
 
+    /**
+     * test if the "+ add new keyword" button will disappear after the "show this list" button is pressed
+     * @throws UiObjectNotFoundException
+     */
     @Test
     public void test_12_ModifyThenShowList() throws UiObjectNotFoundException {
 
@@ -211,7 +243,7 @@ public class TestAddKeywordsNotification {
      * test first clearing every list, then adding everyone's names and deleting everyone's names
      */
     @Test
-    public void test_15_AddKeywordsToThenClearEachList() {
+    public void test_13_AddKeywordsToThenClearEachList() {
         try {
             clearEachList("Title Mark As Read List", "Title Mark As Read List");
             clearEachList("Title Mark As Read List", "Title Important List");
