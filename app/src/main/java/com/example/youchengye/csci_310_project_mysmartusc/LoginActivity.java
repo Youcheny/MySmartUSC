@@ -294,8 +294,6 @@ public class LoginActivity extends AppCompatActivity implements
         List<String>  titleBlackList = UserInfo.getInstance().getTitleBlackList();
         List<String> contentBlackList  =UserInfo.getInstance().getContentBlackList();
 
-        Log.w("titlewhiltelist", titleWhiteList.toString());
-        Log.w("contentWhiteList", contentWhiteList.toString());
         Set<Header> checkers = new HashSet<>();
         for (Header h:headers) {
             for (String keyword:titleWhiteList){
@@ -319,7 +317,7 @@ public class LoginActivity extends AppCompatActivity implements
             }
 
             for (String keyword: importantEmailAddresses){
-                if (h.from.toLowerCase().equals(keyword.toLowerCase())){
+                if (h.from.toLowerCase().contains(keyword.toLowerCase())){
                     if (!checkers.contains(h)){
                         importantEmails.add(h);
                         checkers.add(h);
@@ -374,17 +372,41 @@ public class LoginActivity extends AppCompatActivity implements
         return importantEmails;
     }
 
+//    public List<Header> checkNew(List<Header> headers, List<Header> oldHeaders){
+//        List<Header> newEmails = new ArrayList<>();
+//        if (oldHeaders.size() == 0){
+//            return headers;
+//        }else{
+//            for (Header h: headers){
+//                if (!h.messageId.equals(oldHeaders.get(0).messageId)){
+//                    newEmails.add(h);
+//                }else{
+//                    break;
+//                }
+//            }
+//        }
+//        return newEmails;
+//    }
+
     public List<Header> checkNew(List<Header> headers, List<Header> oldHeaders){
         List<Header> newEmails = new ArrayList<>();
         if (oldHeaders.size() == 0){
+            String newestMessageId = headers.get(0).messageId;
+            EmailList.getInstance().setNewestMessageId(newestMessageId);
             return headers;
-        }else{
+        }
+        else{
+            String newestMessageId = EmailList.getInstance().getNewestMessageId();
+            int i = 0;
             for (Header h: headers){
-                if (!h.messageId.equals(oldHeaders.get(0).messageId)){
+                if(h.messageId.compareTo(newestMessageId) > 0){
                     newEmails.add(h);
-                }else{
-                    break;
+                    if(i == 0){
+                        EmailList.getInstance().setNewestMessageId(h.messageId);
+                    }
                 }
+                else break;
+                i++;
             }
         }
         return newEmails;

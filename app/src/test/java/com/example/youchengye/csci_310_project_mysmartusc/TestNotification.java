@@ -46,45 +46,45 @@ public class TestNotification {
     @Before
     public void setUp() throws Exception {
         /*
-         * The following TestingHeader simulate 10 emails in an inbox. mTestingHeader1 is the
-         * oldest, and TestingHeader10 is the newest
+         * The following TestingHeader simulate 16 emails in an inbox. mTestingHeader1 is the
+         * oldest, and TestingHeader16 is the newest
          */
         mTestingHeader1 = new Header("testing@gmail.com", "testing1",
-                "snippet1", "1", "cwl1");
+                "snippet1", "a", "cwl1");
         mTestingHeader2 = new Header("testing@gmail.com", "twl1",
-                "snippet2", "2", "content1");
+                "snippet2", "b", "content1");
         mTestingHeader3 = new Header("testing@gmail.com", "testing2",
-                "snippet3", "3", "cwl2");
+                "snippet3", "c", "cwl2");
         mTestingHeader4 = new Header("testing@gmail.com", "twl2",
-                "snippet4", "4", "cwl3");
+                "snippet4", "d", "cwl3");
         mTestingHeader5 = new Header("testing@gmail.com", "twl3",
-                "snippet5", "5", "content2");
+                "snippet5", "e", "content2");
         mTestingHeader6 = new Header("testing@gmail.com", "testing3",
-                "snippet6", "6", "cwl4");
+                "snippet6", "f", "cwl4");
         mTestingHeader7 = new Header("testing@gmail.com", "twl4",
-                "snippet7", "7", "content3");
+                "snippet7", "g", "content3");
         mTestingHeader8 = new Header("testing@gmail.com", "testing4",
-                "snippet8", "8", "cwl5");
+                "snippet8", "h", "cwl5");
         mTestingHeader9 = new Header("testing@gmail.com", "twl5",
-                "snippet9", "9", "content4");
+                "snippet9", "i", "content4");
         mTestingHeader10 = new Header("testing@gmail.com", "testing5",
-                "snippet10", "10", "content5");
+                "snippet10", "j", "content5");
         mTestingHeader11 = new Header("testing@gmail.com", "testing6",
-                "snippet10", "11", "content6");
+                "snippet10", "k", "content6");
         mTestingHeader12 = new Header("testing@gmail.com", "testing7",
-                "snippet10", "12", "content7");
+                "snippet10", "l", "content7");
         mTestingHeader13 = new Header("testing@gmail.com", "testing8",
-                "snippet10", "13", "content8");
+                "snippet10", "m", "content8");
         mTestingHeader14 = new Header("testing@gmail.com", "testing9",
-                "snippet10", "14", "content9");
+                "snippet10", "n", "content9");
         mTestingHeader15 = new Header("testing@gmail.com", "testing10",
-                "snippet10", "15", "content10");
+                "snippet10", "o", "content10");
         mTestingHeader16 = new Header("testing@gmail.com", "testing11",
-                "snippet10", "16", "content11");
+                "snippet10", "p", "content11");
 
 
         testClass = new LoginActivity();
-
+        // EmailList.getInstance().setNewestMessageId("0");
     }
 
 
@@ -171,6 +171,7 @@ public class TestNotification {
         expetced.add(mTestingHeader11);
         expetced.add(mTestingHeader10);
         expetced.add(mTestingHeader9);
+        EmailList.getInstance().setNewestMessageId(oldHeaders.get(0).messageId);
         List<Header> actual = testClass.checkNew(newHeaders, oldHeaders);
         assertEquals(expetced, actual);
     }
@@ -201,6 +202,7 @@ public class TestNotification {
         List<Header> expetced = new ArrayList<>();
         expetced.add(mTestingHeader10);
         expetced.add(mTestingHeader9);
+        EmailList.getInstance().setNewestMessageId(oldHeaders.get(0).messageId);
         List<Header> actual = testClass.checkNew(newHeaders, oldHeaders);
         assertEquals(expetced, actual);
     }
@@ -210,6 +212,7 @@ public class TestNotification {
      */
     @Test
     public void test_5(){
+
         List<Header> oldHeaders = new ArrayList<>();
         oldHeaders.add(mTestingHeader9);
         oldHeaders.add(mTestingHeader8);

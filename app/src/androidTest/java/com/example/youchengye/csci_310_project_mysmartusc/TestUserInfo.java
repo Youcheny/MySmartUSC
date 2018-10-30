@@ -245,25 +245,25 @@ public class TestUserInfo {
          * oldest, and TestingHeader10 is the newest
          */
         mTestingHeader1 = new Header("testing@gmail.com", "testing1",
-                "snippet1", "1", "content1");
+                "snippet1", "a", "content1");
         mTestingHeader2 = new Header("tel1", "twl1",
-                "snippet2", "2", "cwl1");
+                "snippet2", "b", "cwl1");
         mTestingHeader3 = new Header("testing@gmail.com", "testing2",
-                "snippet3", "3", "content2");
+                "snippet3", "c", "content2");
         mTestingHeader4 = new Header("iel2", "twl2",
-                "snippet4", "4", "cwl2");
+                "snippet4", "d", "cwl2");
         mTestingHeader5 = new Header("iel3", "twl3",
-                "snippet5", "5", "cwl3");
+                "snippet5", "e", "cwl3");
         mTestingHeader6 = new Header("testing@gmail.com", "testing3",
-                "snippet6", "6", "content3");
+                "snippet6", "f", "content3");
         mTestingHeader7 = new Header("iel4", "twl4",
-                "snippet7", "7", "cwl4");
+                "snippet7", "g", "cwl4");
         mTestingHeader8 = new Header("testing@gmail.com", "testing4",
-                "snippet8", "8", "content4");
+                "snippet8", "h", "content4");
         mTestingHeader9 = new Header("iel5", "twl5",
-                "snippet9", "9", "cwl5");
+                "snippet9", "i", "cwl5");
         mTestingHeader10 = new Header("testing@gmail.com", "testing5",
-                "snippet10", "10", "content5");
+                "snippet10", "j", "content5");
 //        if(!initialized){
 //            initialize("test_user_01@usc.edu");
 //            try {

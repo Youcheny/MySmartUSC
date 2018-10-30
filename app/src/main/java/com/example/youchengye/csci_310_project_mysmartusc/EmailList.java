@@ -41,7 +41,17 @@ public class EmailList {
     private String channel_id;
     private LoginActivity login;
     private List<Header> oldHeaders = new ArrayList<>();
-    private EmailList(){
+    private String mNewestMessageId = "";
+
+    public String getNewestMessageId(){
+        return mNewestMessageId;
+    }
+
+    public void setNewestMessageId(String newestMessageId){
+        mNewestMessageId = newestMessageId;
+    }
+
+    private EmailList() {
         this.credential = null;
         this.service = null;
         this.accessToken = null;
