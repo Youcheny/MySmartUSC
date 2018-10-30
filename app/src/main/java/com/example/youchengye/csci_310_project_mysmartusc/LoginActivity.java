@@ -278,7 +278,7 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
 
-    public List<Header> checkEmail(List<Header> headers){
+    public static List<Header> checkEmail(List<Header> headers){
         List<String> titleWhiteList = UserInfo.getInstance().getTitleWhiteList();
         List<String> contentWhiteList = UserInfo.getInstance().getContentWhiteList();
         List<String> importantEmailAddresses = UserInfo.getInstance().getImportantEmailAddressList();
