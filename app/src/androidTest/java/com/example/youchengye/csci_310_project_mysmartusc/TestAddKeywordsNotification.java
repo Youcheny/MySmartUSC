@@ -38,65 +38,15 @@ public class TestAddKeywordsNotification {
     public ActivityTestRule activityRule = new AddKeywordsActivityTestRule(LoginActivity.class);
     public static UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());;
 
+
+
     @Test
-    public void test0EnterKeywords() throws UiObjectNotFoundException, InterruptedException {
+    public void test_01_EnterKeywords() throws UiObjectNotFoundException, InterruptedException {
         populateKeywordList();
     }
 
     @Test
-    public void testShowList() throws UiObjectNotFoundException {
-        UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
-        if (showList != null){
-            showList.clickAndWaitForNewWindow();
-        }
-        assertTrue(device.findObject(new UiSelector().textContains(TITLE_MARK))!=null);
-    }
-
-    @Test
-    public void testRepeatedKeywords() throws UiObjectNotFoundException, InterruptedException {
-        UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
-        if (showList != null){
-            showList.clickAndWaitForNewWindow();
-        }
-
-        clickModifyButton();
-        addKeyword(TITLE_MARK);
-
-        UiObject listView = device.findObject(new UiSelector().className(ListView.class));
-        device.wait(Until.hasObject(By.text(TITLE_MARK)), 2000);
-        int old = listView.getChildCount();
-
-        addKeyword(TITLE_MARK);
-        UiObject newlistView = device.findObject(new UiSelector().className(ListView.class));
-        int newNum = newlistView.getChildCount();
-        assertEquals(old, newNum );
-
-        clickDone();
-
-    }
-
-    @Test
-    public void testNotificationReceived() throws UiObjectNotFoundException{
-        device.wait(Until.hasObject(By.text("MySmartUSC")), 500000);
-        device.openNotification();
-        device.wait(Until.hasObject(By.textContains("Important")), 50000);
-
-        assertTrue(device.hasObject(By.textContains("Important")));
-        device.pressHome();
-    }
-
-    @Test
-    public void testNotificationOnBackground(){
-        device.wait(Until.hasObject(By.text("MySmartUSC")), 500000);
-        device.openNotification();
-        device.wait(Until.hasObject(By.textContains("Important")), 50000);
-        device.pressHome();
-        device.openNotification();
-        assertTrue(device.hasObject(By.textContains("Important")));
-        device.pressHome();
-    }
-    @Test
-    public void test1AddNewKeyword() {
+    public void test_02_AddNewKeyword() {
 
         try {
             clickModifyButton();
@@ -119,8 +69,66 @@ public class TestAddKeywordsNotification {
 
 
 
+
+
     @Test
-    public void testDeleteWord() throws UiObjectNotFoundException{
+    public void test_03_ShowList() throws UiObjectNotFoundException {
+        UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
+        if (showList != null){
+            showList.clickAndWaitForNewWindow();
+        }
+        assertTrue(device.findObject(new UiSelector().textContains(TITLE_MARK))!=null);
+    }
+
+    @Test
+    public void test_04_RepeatedKeywords() throws UiObjectNotFoundException, InterruptedException {
+        UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
+        if (showList != null){
+            showList.clickAndWaitForNewWindow();
+        }
+
+        clickModifyButton();
+        addKeyword(TITLE_MARK);
+
+        UiObject listView = device.findObject(new UiSelector().className(ListView.class));
+        device.wait(Until.hasObject(By.text(TITLE_MARK)), 2000);
+        int old = listView.getChildCount();
+
+        addKeyword(TITLE_MARK);
+        UiObject newlistView = device.findObject(new UiSelector().className(ListView.class));
+        int newNum = newlistView.getChildCount();
+        assertEquals(old, newNum );
+
+        clickDone();
+
+    }
+
+    @Test
+    public void test_05_NotificationReceived() throws UiObjectNotFoundException{
+        device.wait(Until.hasObject(By.text("MySmartUSC")), 500000);
+        device.openNotification();
+        device.wait(Until.hasObject(By.textContains("Important")), 50000);
+
+        assertTrue(device.hasObject(By.textContains("Important")));
+        device.pressHome();
+    }
+
+    @Test
+    public void test_08_NotificationOnBackground(){
+        device.wait(Until.hasObject(By.text("MySmartUSC")), 500000);
+        device.openNotification();
+        device.wait(Until.hasObject(By.textContains("Important")), 50000);
+        device.pressHome();
+        device.openNotification();
+        assertTrue(device.hasObject(By.textContains("Important")));
+        device.pressHome();
+    }
+
+
+
+
+    @Test
+    public void test_09_DeleteWord() throws UiObjectNotFoundException{
         UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
         if (showList != null){
             showList.clickAndWaitForNewWindow();
@@ -148,24 +156,10 @@ public class TestAddKeywordsNotification {
             assertEquals(old, newNum+1);
         }
     }
-    @Test
-    public void testDeleteAllWords() throws UiObjectNotFoundException {
-        if (device.hasObject(By.textContains("SHOW THIS LIST")) ==false){
-            device.pressHome();
-            openApp(packagename);
-            login();
-        }
-        UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
-        showList.clickAndWaitForNewWindow();
 
-        deleteWord();
-        UiObject listView = device.findObject(new UiSelector().className(ListView.class));
-        int old = listView.getChildCount();
-        assertEquals(0,old);
-    }
     //able to add a lot of keywords and overload the listview we can see
     @Test
-    public void testAddLotKeywords() throws UiObjectNotFoundException{
+    public void test_10_AddLotKeywords() throws UiObjectNotFoundException{
         try{
             clickModifyButton();
         }catch (UiObjectNotFoundException e){
@@ -183,7 +177,23 @@ public class TestAddKeywordsNotification {
     }
 
     @Test
-    public void testModifyThenShowList() throws UiObjectNotFoundException {
+    public void test_11_DeleteAllWords() throws UiObjectNotFoundException {
+        if (device.hasObject(By.textContains("SHOW THIS LIST")) ==false){
+            device.pressHome();
+            openApp(packagename);
+            login();
+        }
+        UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
+        showList.clickAndWaitForNewWindow();
+
+        deleteWord();
+        UiObject listView = device.findObject(new UiSelector().className(ListView.class));
+        int old = listView.getChildCount();
+        assertEquals(0,old);
+    }
+
+    @Test
+    public void test_12_ModifyThenShowList() throws UiObjectNotFoundException {
 
         clickModifyButton();
 
