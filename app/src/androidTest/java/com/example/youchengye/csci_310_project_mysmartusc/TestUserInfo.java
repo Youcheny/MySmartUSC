@@ -1,14 +1,21 @@
 package com.example.youchengye.csci_310_project_mysmartusc;
 
 import android.support.test.runner.AndroidJUnit4;
+import android.util.Log;
 
+import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.example.youchengye.csci_310_project_mysmartusc.LoginActivity.checkEmail;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -217,4 +224,128 @@ public class TestUserInfo {
         UserInfo.getInstance().removeTitleBlackList("tbltest2");
         assertFalse(UserInfo.getInstance().checkTitleBlackList("tbltest2"));
     }
+
+    private Header mTestingHeader1;
+    private Header mTestingHeader2;
+    private Header mTestingHeader3;
+    private Header mTestingHeader4;
+    private Header mTestingHeader5;
+    private Header mTestingHeader6;
+    private Header mTestingHeader7;
+    private Header mTestingHeader8;
+    private Header mTestingHeader9;
+    private Header mTestingHeader10;
+
+    private boolean initialized;
+
+
+    private void setUp(){
+        /*
+         * The following TestingHeader simulate 10 emails in an inbox. mTestingHeader1 is the
+         * oldest, and TestingHeader10 is the newest
+         */
+        mTestingHeader1 = new Header("testing@gmail.com", "testing1",
+                "snippet1", "1", "content1");
+        mTestingHeader2 = new Header("tel1", "twl1",
+                "snippet2", "2", "cwl1");
+        mTestingHeader3 = new Header("testing@gmail.com", "testing2",
+                "snippet3", "3", "content2");
+        mTestingHeader4 = new Header("iel2", "twl2",
+                "snippet4", "4", "cwl2");
+        mTestingHeader5 = new Header("iel3", "twl3",
+                "snippet5", "5", "cwl3");
+        mTestingHeader6 = new Header("testing@gmail.com", "testing3",
+                "snippet6", "6", "content3");
+        mTestingHeader7 = new Header("iel4", "twl4",
+                "snippet7", "7", "cwl4");
+        mTestingHeader8 = new Header("testing@gmail.com", "testing4",
+                "snippet8", "8", "content4");
+        mTestingHeader9 = new Header("iel5", "twl5",
+                "snippet9", "9", "cwl5");
+        mTestingHeader10 = new Header("testing@gmail.com", "testing5",
+                "snippet10", "10", "content5");
+//        if(!initialized){
+//            initialize("test_user_01@usc.edu");
+//            try {
+//                Thread.sleep(10000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            initialized = true;
+//        }
+    }
+
+    /*
+     * Check if email with whitelist keyword in title can be returned in the order of newest to
+     * oldest
+     */
+    @Test
+    public void test_08(){
+        setUp();
+        List<Header> newHeaders = new ArrayList<>();
+        newHeaders.add(mTestingHeader10);
+        newHeaders.add(mTestingHeader9);
+        newHeaders.add(mTestingHeader8);
+        newHeaders.add(mTestingHeader7);
+        newHeaders.add(mTestingHeader6);
+        newHeaders.add(mTestingHeader5);
+        newHeaders.add(mTestingHeader4);
+        newHeaders.add(mTestingHeader3);
+        List<Header> expected = new ArrayList<>();
+        expected.add(mTestingHeader9);
+        expected.add(mTestingHeader7);
+        expected.add(mTestingHeader5);
+        expected.add(mTestingHeader4);
+        List<Header> actual = checkEmail(newHeaders);
+
+        assertEquals(expected, actual);
+
+    }
+
+    /*
+     * Check if email with whitelist keyword in content can be returned
+     */
+    @Test
+    public void test_09(){
+        setUp();
+        List<Header> newHeaders = new ArrayList<>();
+        newHeaders.add(mTestingHeader8);
+        newHeaders.add(mTestingHeader7);
+        newHeaders.add(mTestingHeader6);
+        newHeaders.add(mTestingHeader5);
+        newHeaders.add(mTestingHeader4);
+        newHeaders.add(mTestingHeader3);
+        newHeaders.add(mTestingHeader2);
+        newHeaders.add(mTestingHeader1);
+        List<Header> expected = new ArrayList<>();
+        expected.add(mTestingHeader7);
+        expected.add(mTestingHeader5);
+        expected.add(mTestingHeader4);
+        expected.add(mTestingHeader2);
+        List<Header> actual = checkEmail(newHeaders);
+
+        assertEquals(expected, actual);
+    }
+
+    /*
+     * Check if email sent from important address can be returned
+     */
+    @Test
+    public void test_10(){
+        setUp();
+        List<Header> newHeaders = new ArrayList<>();
+        newHeaders.add(mTestingHeader10);
+        newHeaders.add(mTestingHeader8);
+        newHeaders.add(mTestingHeader6);
+        newHeaders.add(mTestingHeader4);
+        newHeaders.add(mTestingHeader2);
+        List<Header> expected = new ArrayList<>();
+        expected.add(mTestingHeader4);
+        expected.add(mTestingHeader2);
+        List<Header> actual = checkEmail(newHeaders);
+
+        assertEquals(expected, actual);
+
+    }
+
 }
