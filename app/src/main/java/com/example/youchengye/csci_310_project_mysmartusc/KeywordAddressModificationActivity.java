@@ -35,6 +35,8 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
             updateList(false); // initially not in modification state
             Button modifyListButton = (Button)findViewById((R.id.modifyList));
             modifyListButton.setText("Modify List");
+            Button addKeywordButton = (Button)findViewById(R.id.addKeyword);
+            addKeywordButton.setVisibility(View.GONE);
         }
 
         @Override
