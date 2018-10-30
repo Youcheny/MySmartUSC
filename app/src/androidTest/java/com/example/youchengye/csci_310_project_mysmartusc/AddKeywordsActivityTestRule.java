@@ -51,7 +51,7 @@ public class AddKeywordsActivityTestRule extends ActivityTestRule {
 //            UiObject log_in_button = device.findObject(new UiSelector().textContains())
             UiObject sign_in_button = device.findObject(new UiSelector().clickable(true));
             sign_in_button.clickAndWaitForNewWindow();
-            UiObject log_in = device.findObject(new UiSelector().textContains("@"));
+            UiObject log_in = device.findObject(new UiSelector().textContains("@usc"));
             log_in.clickAndWaitForNewWindow();
 
 

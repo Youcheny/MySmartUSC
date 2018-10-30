@@ -52,12 +52,20 @@ import static org.junit.Assert.assertTrue;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestLogin {
     @Rule
-    public ActivityTestRule activityRule = new AddKeywordsActivityTestRule(LoginActivity.class);
+    public ActivityTestRule activityRule = new ActivityTestRule(LoginActivity.class);
     public UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
 
 
     @Test
-    public void testWrongEmail() throws UiObjectNotFoundException, IOException {
+    public void test_01SignIn() throws UiObjectNotFoundException, IOException {
+        UiObject sign_in_button2 = device.findObject(new UiSelector().clickable(true));
+        sign_in_button2.clickAndWaitForNewWindow();
+
+        UiObject log_in2 = device.findObject(new UiSelector().textContains("@usc.edu"));
+        log_in2.clickAndWaitForNewWindow();
+    }
+    @Test
+    public void test_02WrongEmail() throws UiObjectNotFoundException, IOException {
         UiObject sign_in_button = device.findObject(new UiSelector().clickable(true));
         sign_in_button.clickAndWaitForNewWindow();
 
@@ -103,35 +111,28 @@ public class TestLogin {
         }
     }
 
-    @Test
-    public void testSignIn() throws UiObjectNotFoundException, IOException {
-        UiObject sign_in_button2 = device.findObject(new UiSelector().clickable(true));
-        sign_in_button2.clickAndWaitForNewWindow();
 
-        UiObject log_in2 = device.findObject(new UiSelector().textContains("@usc.edu"));
-        log_in2.clickAndWaitForNewWindow();
-    }
 
-    @Test
-    public void testGrabNewEmail() throws UiObjectNotFoundException {
-        device.wait(Until.hasObject(By.text("SHOW THIS LIST")), 500000);
-
-        device.openNotification();
-        device.wait(Until.hasObject(By.textContains("Title Important")), 50000);
-        device.wait(Until.hasObject(By.textContains("Something should not appear here")), 50000);
-        List<Header> oldHeaders = EmailList.getInstance().getOldHeader();
-        device.wait(Until.hasObject(By.textContains("Something should not appear here")), 50000);
-        List<Header> newHeaders = EmailList.getInstance().getOldHeader();
-
-        assertTrue(oldHeaders.get(0).messageId != newHeaders.get(0).messageId);
-    }
+//    @Test
+//    public void testGrabNewEmail() throws UiObjectNotFoundException {
+//        device.wait(Until.hasObject(By.text("SHOW THIS LIST")), 500000);
+//
+//        device.openNotification();
+//        device.wait(Until.hasObject(By.textContains("Title Important")), 50000);
+//        device.wait(Until.hasObject(By.textContains("Something should not appear here")), 50000);
+//        List<Header> oldHeaders = EmailList.getInstance().getOldHeader();
+//        device.wait(Until.hasObject(By.textContains("Something should not appear here")), 50000);
+//        List<Header> newHeaders = EmailList.getInstance().getOldHeader();
+//
+//        assertTrue(oldHeaders.get(0).messageId != newHeaders.get(0).messageId);
+//    }
 
     @Test
-    public void testEightEmails() throws UiObjectNotFoundException {
+    public void test_03EightEmails() throws UiObjectNotFoundException {
         device.wait(Until.hasObject(By.text("SHOW THIS LIST")), 500000);
         device.openNotification();
         device.wait(Until.hasObject(By.textContains("Title Important")), 50000);
-        device.wait(Until.hasObject(By.textContains("Something should not appear here")), 50000);
+        device.wait(Until.hasObject(By.textContains("Something should not appear here")), 10000);
         List<Header> header = EmailList.getInstance().getOldHeader();
         assertEquals(8, header.size());
     }
