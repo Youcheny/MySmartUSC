@@ -1,5 +1,6 @@
 package com.example.youchengye.csci_310_project_mysmartusc;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Environment;
 import android.support.test.runner.AndroidJUnit4;
@@ -12,7 +13,11 @@ import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
+import android.support.test.uiautomator.Until;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import org.junit.After;
 import org.junit.Before;
@@ -28,135 +33,107 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Properties;
+import java.util.Random;
 
+import javax.mail.Message;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestLogin {
     @Rule
-    public ActivityTestRule activityRule = new ActivityTestRule(LoginActivity.class);
-    public static UiDevice device;
+    public ActivityTestRule activityRule = new AddKeywordsActivityTestRule(LoginActivity.class);
+    public UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
 
-    @BeforeClass
-    public static void setUp() throws Exception{
-        device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-    }
-
-
-//    @Test
-//    public void test01_testWrongEmail() throws UiObjectNotFoundException, IOException {
-//        UiObject sign_in_button = device.findObject(new UiSelector().clickable(true));
-//        sign_in_button.clickAndWaitForNewWindow();
-//
-//        UiObject log_in = device.findObject(new UiSelector().textContains(".com"));
-//        log_in.waitForExists(100000);
-//        if(log_in.exists()){
-//            log_in.clickAndWaitForNewWindow();
-//            assertTrue(device.hasObject(By.textContains("Sign in")));
-//        }
-//
-//
-//
-//
-////        UiObject sign_in_button2 = device.findObject(new UiSelector().clickable(true));
-////        sign_in_button2.clickAndWaitForNewWindow();
-////
-////        UiObject log_in2 = device.findObject(new UiSelector().textContains("@usc.edu"));
-////        log_in2.clickAndWaitForNewWindow();
-//
-////        UiObject log_in = device.findObject(new UiSelector().textContains("Use another account"));
-////        log_in.waitForExists(100000);
-////        log_in.clickAndWaitForNewWindow();
-////
-////        UiObject accountInput = device.findObject(new UiSelector().focusable(true));
-////        accountInput.waitForExists(100000);
-////        accountInput.setText("mysmartusc123@gmail.com");
-////
-////        UiObject next = device.findObject(new UiSelector().textContains("Next"));
-////        next.waitForExists(100000);
-////        next.clickAndWaitForNewWindow();
-////
-////
-////        UiObject passwordInput = device.findObject(new UiSelector().focusable(true));
-////        passwordInput.waitForExists(100000);
-////        passwordInput.setText("smartusc123!");
-////
-////        UiObject next2 = device.findObject(new UiSelector().textContains("Next"));
-////        next2.waitForExists(100000);
-////        next2.clickAndWaitForNewWindow();
-////
-////        UiObject agree = device.findObject(new UiSelector().textContains("I agree"));
-////        agree.waitForExists(10000);
-////        if (agree.exists()){
-////            agree.clickAndWaitForNewWindow();
-////        }
-////
-////        UiObject allow = device.findObject(new UiSelector().textContains("ALLOW"));
-////        allow.waitForExists(10000);
-////        if(allow.exists()){
-////            allow.clickAndWaitForNewWindow();
-////        }
-//    }
 
     @Test
-    public void test02_testSignIn() {
-        UiObject sign_in_button2 = device.findObject(new UiSelector().clickable(true));
-        try {
-            sign_in_button2.clickAndWaitForNewWindow();
-        } catch (UiObjectNotFoundException e) {
-            e.printStackTrace();
+    public void testWrongEmail() throws UiObjectNotFoundException, IOException {
+        UiObject sign_in_button = device.findObject(new UiSelector().clickable(true));
+        sign_in_button.clickAndWaitForNewWindow();
+
+        UiObject log_in = device.findObject(new UiSelector().textContains(".com"));
+
+        log_in.waitForExists(5000);
+        if(log_in.exists()) {
+            log_in.clickAndWaitForNewWindow();
         }
+        else{
+            UiObject log_in2 = device.findObject(new UiSelector().textContains("Use another account"));
+            log_in2.waitForExists(100000);
+            log_in2.clickAndWaitForNewWindow();
+
+            UiObject accountInput = device.findObject(new UiSelector().className(EditText.class));
+            accountInput.waitForExists(100000);
+            accountInput.setText("mysmartusc123@gmail.com");
+
+            UiObject next = device.findObject(new UiSelector().className(Button.class).textContains("Next"));
+            next.waitForExists(100000);
+            next.clickAndWaitForNewWindow();
+
+            device.wait(Until.hasObject(By.textContains("password")), 20000);
+            UiObject passwordInput = device.findObject(new UiSelector().className(EditText.class));
+            passwordInput.waitForExists(100000);
+            passwordInput.setText("smartusc123!");
+
+            UiObject next2 = device.findObject(new UiSelector().textContains("Next"));
+            next2.waitForExists(100000);
+            next2.clickAndWaitForNewWindow();
+
+            UiObject agree = device.findObject(new UiSelector().textContains("I agree").className(Button.class));
+            agree.waitForExists(10000);
+            if (agree.exists()){
+                agree.clickAndWaitForNewWindow();
+            }
+
+            UiObject allow = device.findObject(new UiSelector().textContains("ALLOW"));
+            allow.waitForExists(10000);
+            if(allow.exists()){
+                allow.clickAndWaitForNewWindow();
+            }
+        }
+    }
+
+    @Test
+    public void testSignIn() throws UiObjectNotFoundException, IOException {
+        UiObject sign_in_button2 = device.findObject(new UiSelector().clickable(true));
+        sign_in_button2.clickAndWaitForNewWindow();
 
         UiObject log_in2 = device.findObject(new UiSelector().textContains("@usc.edu"));
-        try {
-            log_in2.clickAndWaitForNewWindow();
-        } catch (UiObjectNotFoundException e) {
-            e.printStackTrace();
-        }
-
-//        assertTrue(device.hasObject(By.textContains("Sign out")));
+        log_in2.clickAndWaitForNewWindow();
     }
 
     @Test
-    public void test03_testAddNewKeyword() {
-        test02_testSignIn();
-        try {
-            UiObject modifyListButton = device.findObject(new UiSelector().textContains("MODIFY LIST"));
-            modifyListButton.waitForExists(100000);
-            modifyListButton.click();
-            testAddKeyword("promotion");
-            testAddKeyword("macy's");
-            testAddKeyword("target");
-            testAddKeyword("amazon");
-        } catch (UiObjectNotFoundException e) {
-            e.printStackTrace();
-        }
+    public void testGrabNewEmail() throws UiObjectNotFoundException {
+        device.wait(Until.hasObject(By.text("SHOW THIS LIST")), 500000);
+
+        device.openNotification();
+        device.wait(Until.hasObject(By.textContains("Title Important")), 50000);
+        device.wait(Until.hasObject(By.textContains("Something should not appear here")), 50000);
+        List<Header> oldHeaders = EmailList.getInstance().getOldHeader();
+        device.wait(Until.hasObject(By.textContains("Something should not appear here")), 50000);
+        List<Header> newHeaders = EmailList.getInstance().getOldHeader();
+
+        assertTrue(oldHeaders.get(0).messageId != newHeaders.get(0).messageId);
     }
 
-    public void testAddKeyword(String keyword) {
-        try {
-            UiObject addNewKeywordButton = device.findObject(new UiSelector().textContains("+ ADD NEW KEYWORD"));
-            addNewKeywordButton.waitForExists(100000);
-            addNewKeywordButton.click();
-            UiObject newKeywordEditText = device.findObject(new UiSelector().className("android.widget.EditText"));
-            newKeywordEditText.waitForExists(100000);
-            newKeywordEditText.setText(keyword);
-            addNewKeywordButton = device.findObject(new UiSelector().textStartsWith("ADD NEW KEYWORD"));
-            addNewKeywordButton.waitForExists(100000);
-            addNewKeywordButton.click();
-            Thread.sleep(1000);
-            assertTrue(device.hasObject(By.textContains(keyword)));
-        } catch (UiObjectNotFoundException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+    @Test
+    public void testEightEmails() throws UiObjectNotFoundException {
+        device.wait(Until.hasObject(By.text("SHOW THIS LIST")), 500000);
+        device.openNotification();
+        device.wait(Until.hasObject(By.textContains("Title Important")), 50000);
+        device.wait(Until.hasObject(By.textContains("Something should not appear here")), 50000);
+        List<Header> header = EmailList.getInstance().getOldHeader();
+        assertEquals(8, header.size());
     }
-
-
-
-
 
 }

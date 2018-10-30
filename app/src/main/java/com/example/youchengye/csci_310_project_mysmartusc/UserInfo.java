@@ -57,7 +57,7 @@ public class UserInfo {
     FirebaseFirestore firestore;
 
     // Variable Initialization
-    private String username;
+    public String username;
     private List<String> titleBlackList = new ArrayList<String>();
     private List<String> titleWhiteList = new ArrayList<String>();
     private List<String> titleStarList = new ArrayList<String>();

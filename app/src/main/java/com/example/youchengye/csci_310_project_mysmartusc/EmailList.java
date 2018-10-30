@@ -222,8 +222,7 @@ public class EmailList {
         ModifyMessageRequest mods = new ModifyMessageRequest().setRemoveLabelIds(labelsToRemove);
         try{
             Message message = service.users().messages().modify(userId, messageId, mods).execute();
-//            System.out.println("Message id: " + message.getId());
-//            System.out.println(message.toPrettyString());
+
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -236,11 +235,13 @@ public class EmailList {
         ModifyMessageRequest mods = new ModifyMessageRequest().setAddLabelIds(labelsToAdd);
         try{
             Message message = service.users().messages().modify(userId, messageId, mods).execute();
-//            System.out.println("Message id: " + message.getId());
-//            System.out.println(message.toPrettyString());
         }catch(IOException e){
             e.printStackTrace();
         }
 
+    }
+
+    public List<Header> getOldHeader(){
+        return oldHeaders;
     }
 }

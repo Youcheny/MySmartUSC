@@ -1,45 +1,29 @@
 package com.example.youchengye.csci_310_project_mysmartusc;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Rect;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.Espresso;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.support.test.uiautomator.By;
-import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject;
 import android.support.test.uiautomator.UiObjectNotFoundException;
 import android.support.test.uiautomator.UiSelector;
 import android.support.test.uiautomator.Until;
-import android.support.v4.app.NotificationManagerCompat;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Spinner;
-import android.widget.TextView;
 
-import org.hamcrest.core.AllOf;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
 
-import java.util.List;
-import static android.support.test.espresso.Espresso.onData;
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4.class)
 public class TestAddKeywordsNotification {
     private String TITLE_MARK = "Title Mark";
@@ -55,7 +39,7 @@ public class TestAddKeywordsNotification {
     public static UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());;
 
     @Test
-    public void testEnterKeywords() throws UiObjectNotFoundException, InterruptedException {
+    public void test0EnterKeywords() throws UiObjectNotFoundException, InterruptedException {
         populateKeywordList();
     }
 
@@ -113,7 +97,7 @@ public class TestAddKeywordsNotification {
         device.pressHome();
     }
     @Test
-    public void testAddNewKeyword() {
+    public void test1AddNewKeyword() {
 
         try {
             UiObject modifyListButton = device.findObject(new UiSelector().textContains("MODIFY LIST"));
