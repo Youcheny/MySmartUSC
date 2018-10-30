@@ -20,6 +20,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -204,6 +206,40 @@ public class TestAddKeywordsNotification {
 
         assertTrue(device.hasObject(By.textContains("+ ADD NEW KEYWORD")) == false);
     }
+
+    /**
+     * test first clearing every list, then adding everyone's names and deleting everyone's names
+     */
+    @Test
+    public void test_15_AddKeywordsToThenClearEachList() {
+        try {
+            clearEachList("Title Mark As Read List", "Title Mark As Read List");
+            clearEachList("Title Mark As Read List", "Title Important List");
+            clearEachList("Title Important List", "Title Star List");
+            clearEachList("Title Star List", "Content Mark As Read List");
+            clearEachList("Content Mark As Read List", "Content Important List");
+            clearEachList("Content Important List", "Content Star List");
+            clearEachList("Content Star List", "Important Email Addresses List");
+            String[] programmersList = {"Ruoxi Jia", "Youcheng Ye", "Qiusi Li", "Tianli Yu", "Tuling Zhao", "Thank you for using our app!"};
+            populateEachListWithStringArray("Important Email Addresses List", "Title Mark As Read List", programmersList);
+            populateEachListWithStringArray("Title Mark As Read List", "Title Important List", programmersList);
+            populateEachListWithStringArray("Title Important List", "Title Star List", programmersList);
+            populateEachListWithStringArray("Title Star List", "Content Mark As Read List", programmersList);
+            populateEachListWithStringArray("Content Mark As Read List", "Content Important List", programmersList);
+            populateEachListWithStringArray("Content Important List", "Content Star List", programmersList);
+            populateEachListWithStringArray("Content Star List", "Important Email Addresses List", programmersList);
+            clearEachList("Important Email Addresses List", "Title Mark As Read List");
+            clearEachList("Title Mark As Read List", "Title Important List");
+            clearEachList("Title Important List", "Title Star List");
+            clearEachList("Title Star List", "Content Mark As Read List");
+            clearEachList("Content Mark As Read List", "Content Important List");
+            clearEachList("Content Important List", "Content Star List");
+            clearEachList("Content Star List", "Important Email Addresses List");
+
+        } catch (UiObjectNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
     private void populateKeywordList() throws UiObjectNotFoundException {
         populateEachList("Title Mark As Read List", "Title Mark As Read List", TITLE_MARK);
         populateEachList("Title Mark As Read List", "Title Important List", TITLE_IMPORTANT);
@@ -218,12 +254,12 @@ public class TestAddKeywordsNotification {
         device.wait(Until.hasObject(By.textContains(lastList)),2000);
         UiObject spinner = device.findObject(new UiSelector().textContains(lastList));
         device.wait(Until.hasObject(By.textContains(lastList)),2000);
-        spinner.clickAndWaitForNewWindow();
+        spinner.click();
 
         device.wait(Until.hasObject(By.textContains(nextList)),2000);
         UiObject selectList = device.findObject(new UiSelector().textContains(nextList));
         device.wait(Until.hasObject(By.textContains(nextList)),2000);
-        selectList.clickAndWaitForNewWindow();
+        selectList.click();
         device.wait(Until.hasObject(By.textContains(nextList)),2000);
 
         clickModifyButton();
@@ -237,6 +273,49 @@ public class TestAddKeywordsNotification {
         finishAdd.clickAndWaitForNewWindow();
 
         clickDone();
+    }
+
+    private void populateEachListWithStringArray (String lastList, String nextList, String[] keywords) throws UiObjectNotFoundException {
+        device.wait(Until.hasObject(By.textContains(lastList)),2000);
+        UiObject spinner = device.findObject(new UiSelector().textContains(lastList));
+        device.wait(Until.hasObject(By.textContains(lastList)),2000);
+        spinner.click();
+
+        device.wait(Until.hasObject(By.textContains(nextList)),2000);
+        UiObject selectList = device.findObject(new UiSelector().textContains(nextList));
+        device.wait(Until.hasObject(By.textContains(nextList)),2000);
+        selectList.click();
+        device.wait(Until.hasObject(By.textContains(nextList)),2000);
+
+        clickModifyButton();
+        for (String keyword : keywords) {
+            clickButton("ADD NEW KEYWORD");
+            UiObject text = device.findObject(new UiSelector().className(EditText.class));
+            text.waitForExists(5000);
+            text.setText(keyword);
+            UiObject finishAdd = device.findObject(new UiSelector().text("ADD NEW KEYWORD"));
+            finishAdd.waitForExists(5000);
+            finishAdd.click();
+        }
+
+
+
+        clickDone();
+    }
+
+    private void clearEachList(String lastList, String nextList) throws UiObjectNotFoundException {
+        device.wait(Until.hasObject(By.textContains(lastList)),2000);
+        UiObject spinner = device.findObject(new UiSelector().textContains(lastList));
+        device.wait(Until.hasObject(By.textContains(lastList)),2000);
+        spinner.click();
+
+        device.wait(Until.hasObject(By.textContains(nextList)),2000);
+        UiObject selectList = device.findObject(new UiSelector().textContains(nextList));
+        device.wait(Until.hasObject(By.textContains(nextList)),2000);
+        selectList.click();
+        device.wait(Until.hasObject(By.textContains(nextList)),2000);
+
+        deleteWord();
     }
 
     private void addKeyword(String keyword) throws UiObjectNotFoundException {
