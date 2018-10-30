@@ -57,7 +57,7 @@ public class TestLogin {
 
 
     @Test
-    public void test_01SignIn() throws UiObjectNotFoundException, IOException {
+    public void test_01_SignIn() throws UiObjectNotFoundException, IOException {
         UiObject sign_in_button2 = device.findObject(new UiSelector().clickable(true));
         sign_in_button2.clickAndWaitForNewWindow();
 
@@ -65,7 +65,7 @@ public class TestLogin {
         log_in2.clickAndWaitForNewWindow();
     }
     @Test
-    public void test_02WrongEmail() throws UiObjectNotFoundException, IOException {
+    public void test_02_WrongEmail() throws UiObjectNotFoundException, IOException {
         UiObject sign_in_button = device.findObject(new UiSelector().clickable(true));
         sign_in_button.clickAndWaitForNewWindow();
 
