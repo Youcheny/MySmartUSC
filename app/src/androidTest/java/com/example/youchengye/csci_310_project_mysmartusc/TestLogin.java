@@ -112,19 +112,4 @@ public class TestLogin {
     }
 
 
-
-//    @Test
-//    public void testGrabNewEmail() throws UiObjectNotFoundException {
-//        device.wait(Until.hasObject(By.text("SHOW THIS LIST")), 500000);
-//
-//        device.openNotification();
-//        device.wait(Until.hasObject(By.textContains("Title Important")), 50000);
-//        device.wait(Until.hasObject(By.textContains("Something should not appear here")), 50000);
-//        List<Header> oldHeaders = EmailList.getInstance().getOldHeader();
-//        device.wait(Until.hasObject(By.textContains("Something should not appear here")), 50000);
-//        List<Header> newHeaders = EmailList.getInstance().getOldHeader();
-//
-//        assertTrue(oldHeaders.get(0).messageId != newHeaders.get(0).messageId);
-//    }
-
 }
