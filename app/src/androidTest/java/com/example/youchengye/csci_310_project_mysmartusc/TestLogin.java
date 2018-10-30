@@ -44,70 +44,115 @@ public class TestLogin {
     }
 
 
-    @Test
-    public void test01_testWrongEmail() throws UiObjectNotFoundException, IOException {
-        UiObject sign_in_button = device.findObject(new UiSelector().clickable(true));
-        sign_in_button.clickAndWaitForNewWindow();
-
-        UiObject log_in = device.findObject(new UiSelector().textContains(".com"));
-        log_in.waitForExists(100000);
-        if(log_in.exists()){
-            log_in.clickAndWaitForNewWindow();
+//    @Test
+//    public void test01_testWrongEmail() throws UiObjectNotFoundException, IOException {
+//        UiObject sign_in_button = device.findObject(new UiSelector().clickable(true));
+//        sign_in_button.clickAndWaitForNewWindow();
+//
+//        UiObject log_in = device.findObject(new UiSelector().textContains(".com"));
+//        log_in.waitForExists(100000);
+//        if(log_in.exists()){
+//            log_in.clickAndWaitForNewWindow();
 //            assertTrue(device.hasObject(By.textContains("Sign in")));
+//        }
+//
+//
+//
+//
+////        UiObject sign_in_button2 = device.findObject(new UiSelector().clickable(true));
+////        sign_in_button2.clickAndWaitForNewWindow();
+////
+////        UiObject log_in2 = device.findObject(new UiSelector().textContains("@usc.edu"));
+////        log_in2.clickAndWaitForNewWindow();
+//
+////        UiObject log_in = device.findObject(new UiSelector().textContains("Use another account"));
+////        log_in.waitForExists(100000);
+////        log_in.clickAndWaitForNewWindow();
+////
+////        UiObject accountInput = device.findObject(new UiSelector().focusable(true));
+////        accountInput.waitForExists(100000);
+////        accountInput.setText("mysmartusc123@gmail.com");
+////
+////        UiObject next = device.findObject(new UiSelector().textContains("Next"));
+////        next.waitForExists(100000);
+////        next.clickAndWaitForNewWindow();
+////
+////
+////        UiObject passwordInput = device.findObject(new UiSelector().focusable(true));
+////        passwordInput.waitForExists(100000);
+////        passwordInput.setText("smartusc123!");
+////
+////        UiObject next2 = device.findObject(new UiSelector().textContains("Next"));
+////        next2.waitForExists(100000);
+////        next2.clickAndWaitForNewWindow();
+////
+////        UiObject agree = device.findObject(new UiSelector().textContains("I agree"));
+////        agree.waitForExists(10000);
+////        if (agree.exists()){
+////            agree.clickAndWaitForNewWindow();
+////        }
+////
+////        UiObject allow = device.findObject(new UiSelector().textContains("ALLOW"));
+////        allow.waitForExists(10000);
+////        if(allow.exists()){
+////            allow.clickAndWaitForNewWindow();
+////        }
+//    }
+
+    @Test
+    public void test02_testSignIn() {
+        UiObject sign_in_button2 = device.findObject(new UiSelector().clickable(true));
+        try {
+            sign_in_button2.clickAndWaitForNewWindow();
+        } catch (UiObjectNotFoundException e) {
+            e.printStackTrace();
         }
 
+        UiObject log_in2 = device.findObject(new UiSelector().textContains("@usc.edu"));
+        try {
+            log_in2.clickAndWaitForNewWindow();
+        } catch (UiObjectNotFoundException e) {
+            e.printStackTrace();
+        }
 
-
-
-//        UiObject sign_in_button2 = device.findObject(new UiSelector().clickable(true));
-//        sign_in_button2.clickAndWaitForNewWindow();
-//
-//        UiObject log_in2 = device.findObject(new UiSelector().textContains("@usc.edu"));
-//        log_in2.clickAndWaitForNewWindow();
-
-//        UiObject log_in = device.findObject(new UiSelector().textContains("Use another account"));
-//        log_in.waitForExists(100000);
-//        log_in.clickAndWaitForNewWindow();
-//
-//        UiObject accountInput = device.findObject(new UiSelector().focusable(true));
-//        accountInput.waitForExists(100000);
-//        accountInput.setText("mysmartusc123@gmail.com");
-//
-//        UiObject next = device.findObject(new UiSelector().textContains("Next"));
-//        next.waitForExists(100000);
-//        next.clickAndWaitForNewWindow();
-//
-//
-//        UiObject passwordInput = device.findObject(new UiSelector().focusable(true));
-//        passwordInput.waitForExists(100000);
-//        passwordInput.setText("smartusc123!");
-//
-//        UiObject next2 = device.findObject(new UiSelector().textContains("Next"));
-//        next2.waitForExists(100000);
-//        next2.clickAndWaitForNewWindow();
-//
-//        UiObject agree = device.findObject(new UiSelector().textContains("I agree"));
-//        agree.waitForExists(10000);
-//        if (agree.exists()){
-//            agree.clickAndWaitForNewWindow();
-//        }
-//
-//        UiObject allow = device.findObject(new UiSelector().textContains("ALLOW"));
-//        allow.waitForExists(10000);
-//        if(allow.exists()){
-//            allow.clickAndWaitForNewWindow();
-//        }
+//        assertTrue(device.hasObject(By.textContains("Sign out")));
     }
 
     @Test
-    public void test02_testSignIn() throws UiObjectNotFoundException, IOException {
-        UiObject sign_in_button2 = device.findObject(new UiSelector().clickable(true));
-        sign_in_button2.clickAndWaitForNewWindow();
+    public void test03_testAddNewKeyword() {
+        test02_testSignIn();
+        try {
+            UiObject modifyListButton = device.findObject(new UiSelector().textContains("MODIFY LIST"));
+            modifyListButton.waitForExists(100000);
+            modifyListButton.click();
+            testAddKeyword("promotion");
+            testAddKeyword("macy's");
+            testAddKeyword("target");
+            testAddKeyword("amazon");
+        } catch (UiObjectNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
-        UiObject log_in2 = device.findObject(new UiSelector().textContains("@usc.edu"));
-        log_in2.clickAndWaitForNewWindow();
+    public void testAddKeyword(String keyword) {
+        try {
+            UiObject addNewKeywordButton = device.findObject(new UiSelector().textContains("+ ADD NEW KEYWORD"));
+            addNewKeywordButton.waitForExists(100000);
+            addNewKeywordButton.click();
+            UiObject newKeywordEditText = device.findObject(new UiSelector().className("android.widget.EditText"));
+            newKeywordEditText.waitForExists(100000);
+            newKeywordEditText.setText(keyword);
+            addNewKeywordButton = device.findObject(new UiSelector().textStartsWith("ADD NEW KEYWORD"));
+            addNewKeywordButton.waitForExists(100000);
+            addNewKeywordButton.click();
+            Thread.sleep(1000);
+            assertTrue(device.hasObject(By.textContains(keyword)));
+        } catch (UiObjectNotFoundException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-//        assertTrue(device.hasObject(By.textContains("Sign out")));
     }
 
 

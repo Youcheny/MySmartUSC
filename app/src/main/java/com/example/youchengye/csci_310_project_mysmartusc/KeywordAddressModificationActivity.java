@@ -232,6 +232,9 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
             for (int i = 0; i < updatedList.size(); ++i)
                 updatedList.set(i, updatedList.get(i) + " - click to remove");
         }
+        else {
+            currentListView.setOnItemClickListener(null);
+        }
         ArrayAdapter<String> currListAdapter = new ArrayAdapter<String>(this, R.layout.single_word_row, updatedList);
         currentListView.setAdapter(currListAdapter);
     }
@@ -239,6 +242,8 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
     public void onClickShowList(View view) {
         Button modifyListButton = (Button)findViewById((R.id.modifyList));
         modifyListButton.setText("Modify List");
+        Button addKeywordButton = (Button)findViewById(R.id.addKeyword);
+        addKeywordButton.setVisibility(View.GONE);
         updateList(false);
     }
 
