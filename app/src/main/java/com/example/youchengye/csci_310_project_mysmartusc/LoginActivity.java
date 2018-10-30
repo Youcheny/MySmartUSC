@@ -296,6 +296,7 @@ public class LoginActivity extends AppCompatActivity implements
 
         Log.w("titlewhiltelist", titleWhiteList.toString());
         Log.w("contentWhiteList", contentWhiteList.toString());
+        Log.w("importantEmailAddress", importantEmailAddresses.toString());
         Set<Header> checkers = new HashSet<>();
         for (Header h:headers) {
             for (String keyword:titleWhiteList){
@@ -319,7 +320,7 @@ public class LoginActivity extends AppCompatActivity implements
             }
 
             for (String keyword: importantEmailAddresses){
-                if (h.from.toLowerCase().equals(keyword.toLowerCase())){
+                if (h.from.toLowerCase().contains(keyword.toLowerCase())){
                     if (!checkers.contains(h)){
                         importantEmails.add(h);
                         checkers.add(h);
