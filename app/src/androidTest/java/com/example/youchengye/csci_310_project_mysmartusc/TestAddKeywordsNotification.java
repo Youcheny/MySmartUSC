@@ -172,10 +172,14 @@ public class TestAddKeywordsNotification {
     }
     @Test
     public void testDeleteAllWords() throws UiObjectNotFoundException {
-        UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
-        if (showList != null){
-            showList.clickAndWaitForNewWindow();
+        if (device.hasObject(By.textContains("SHOW THIS LIST")) ==false){
+            device.pressHome();
+            openApp(packagename);
+            login();
         }
+        UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
+        showList.clickAndWaitForNewWindow();
+
         deleteWord();
         UiObject listView = device.findObject(new UiSelector().className(ListView.class));
         int old = listView.getChildCount();
@@ -209,18 +213,11 @@ public class TestAddKeywordsNotification {
         modifyButton.clickAndWaitForNewWindow();
 
         UiObject addNewKeywords = device.findObject(new UiSelector().textContains("+ ADD NEW KEYWORD"));
-        Rect rect = addNewKeywords.getBounds();
-
+        assertTrue(addNewKeywords != null);
         UiObject showList = device.findObject(new UiSelector().textContains("SHOW THIS LIST"));
-        if (showList != null){
-            showList.clickAndWaitForNewWindow();
-        }
+        showList.clickAndWaitForNewWindow();
 
-        UiObject addNewKeywordsChanged = device.findObject(new UiSelector().textContains("+ ADD NEW KEYWORD"));
-        Rect rectNew = addNewKeywordsChanged.getBounds();
-        assertEquals(rect.bottom, rectNew.bottom);
-        assertEquals(rect.top, rectNew.top);
-
+        assertTrue(device.hasObject(By.textContains("+ ADD NEW KEYWORD")) == false);
     }
     private void populateKeywordList() throws UiObjectNotFoundException {
         populateEachList("Title Mark As Read List", "Title Mark As Read List", TITLE_MARK);
