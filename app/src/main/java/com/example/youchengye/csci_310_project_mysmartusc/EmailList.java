@@ -125,7 +125,7 @@ public class EmailList {
                 }
                 fetchCount++;
                 System.out.println("Fetch count: "+fetchCount);
-                if(fetchCount%2==0){
+                if(fetchCount%600==0){
                     EmailList.getInstance().refresh();
                 }
 
