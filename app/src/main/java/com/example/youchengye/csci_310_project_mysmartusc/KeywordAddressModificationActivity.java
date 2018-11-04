@@ -180,7 +180,7 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
             Bundle extras = getIntent().getExtras();
             if (extras!=null){
                 String username = extras.getString("username");
-                UserInfo.getInstance().Initialize(username);
+                UserInfo.getInstance().Initialize(username, this);
             }
             Log.w("intent","not null");
         }
@@ -200,7 +200,7 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new OnListSelected());
     }
 
-    private void updateList(boolean showClickToRemove) {
+    public void updateList(boolean showClickToRemove) {
         switch (currentListID) {
             case 0:
                 updateList(UserInfo.getInstance().getTitleBlackList(), showClickToRemove);
@@ -239,14 +239,6 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
         }
         ArrayAdapter<String> currListAdapter = new ArrayAdapter<String>(this, R.layout.single_word_row, updatedList);
         currentListView.setAdapter(currListAdapter);
-    }
-
-    public void onClickShowList(View view) {
-        Button modifyListButton = (Button)findViewById((R.id.modifyList));
-        modifyListButton.setText("Modify List");
-        Button addKeywordButton = (Button)findViewById(R.id.addKeyword);
-        addKeywordButton.setVisibility(View.GONE);
-        updateList(false);
     }
 
     public void onClickModifyList(View view) {

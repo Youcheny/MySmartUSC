@@ -80,8 +80,31 @@ public class UserInfo {
     private boolean contentStarListChanged;
     private boolean importantEmailAddressListChanged;
 
-
-    public void Initialize(String username) {
+    private class OnDatabaseRetrievalCompleteListener implements OnCompleteListener {
+        KeywordAddressModificationActivity ui;
+        public OnDatabaseRetrievalCompleteListener(KeywordAddressModificationActivity ui) {
+            this.ui = ui;
+        }
+        @Override
+        public void onComplete(@NonNull Task task) {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = (DocumentSnapshot)task.getResult();
+                HashMap<String, Object> databaseUserInfoRetrieval = (HashMap<String, Object>)document.getData();
+                if (databaseUserInfoRetrieval == null) databaseUserInfoRetrieval = new HashMap<String, Object>(); // empty hashmap to prevent crash
+                setTitleBlackList((ArrayList<String>) databaseUserInfoRetrieval.get("titleBlackList"));
+                setTitleWhiteList((ArrayList<String>) databaseUserInfoRetrieval.get("titleWhiteList"));
+                setTitleStarList((ArrayList<String>) databaseUserInfoRetrieval.get("titleStarList"));
+                setContentBlackList((ArrayList<String>) databaseUserInfoRetrieval.get("contentBlackList"));
+                setContentWhiteList((ArrayList<String>) databaseUserInfoRetrieval.get("contentWhiteList"));
+                setContentStarList((ArrayList<String>) databaseUserInfoRetrieval.get("contentStarList"));
+                setImportantEmailAddressList((ArrayList<String>) databaseUserInfoRetrieval.get("importantEmailAddressList"));
+                Log.d(TAG, document.getId() + " => " + document.getData());
+                // information has been retrieved from database
+                ui.updateList(false);
+            }
+        }
+    }
+    public void Initialize(String username, KeywordAddressModificationActivity ui) {
         this.username = username;
         titleBlackListChanged = false;
         titleWhiteListChanged = false;
@@ -92,27 +115,7 @@ public class UserInfo {
         importantEmailAddressListChanged = false;
         // retrieve and initialize all the lists in UserData Object
         DocumentReference userRef = firestore.collection("Users").document(username);
-        userRef
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot document = task.getResult();
-                            HashMap<String, Object> databaseUserInfoRetrieval = (HashMap<String, Object>)document.getData();
-                            if (databaseUserInfoRetrieval == null) databaseUserInfoRetrieval = new HashMap<String, Object>(); // empty hashmap to prevent crash
-                            UserInfo.getInstance().setTitleBlackList((ArrayList<String>) databaseUserInfoRetrieval.get("titleBlackList"));
-                            UserInfo.getInstance().setTitleWhiteList((ArrayList<String>) databaseUserInfoRetrieval.get("titleWhiteList"));
-                            UserInfo.getInstance().setTitleStarList((ArrayList<String>) databaseUserInfoRetrieval.get("titleStarList"));
-                            UserInfo.getInstance().setContentBlackList((ArrayList<String>) databaseUserInfoRetrieval.get("contentBlackList"));
-                            UserInfo.getInstance().setContentWhiteList((ArrayList<String>) databaseUserInfoRetrieval.get("contentWhiteList"));
-                            UserInfo.getInstance().setContentStarList((ArrayList<String>) databaseUserInfoRetrieval.get("contentStarList"));
-                            UserInfo.getInstance().setImportantEmailAddressList((ArrayList<String>) databaseUserInfoRetrieval.get("importantEmailAddressList"));
-                            Log.d(TAG, document.getId() + " => " + document.getData());
-                            // information has been retrieved from database
-                        }
-                    }
-                });
+        userRef.get().addOnCompleteListener(new OnDatabaseRetrievalCompleteListener(ui));
     }
     // getters and setters
     public List<String> getTitleBlackList() {return titleBlackList;}
