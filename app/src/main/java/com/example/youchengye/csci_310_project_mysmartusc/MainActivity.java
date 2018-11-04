@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClickLogin(View view) {
         Intent gotoLoginPage = new Intent(this, LoginActivity.class);
+        EmailList.getInstance().setIntent(gotoLoginPage);
         startActivity(gotoLoginPage);
     }
 

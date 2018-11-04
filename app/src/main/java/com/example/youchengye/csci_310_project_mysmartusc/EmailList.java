@@ -1,6 +1,10 @@
 package com.example.youchengye.csci_310_project_mysmartusc;
 
 
+import android.content.Intent;
+import android.content.SyncRequest;
+import android.util.Log;
+
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -18,6 +22,15 @@ import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 import com.google.api.services.gmail.model.ModifyMessageRequest;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.util.concurrent.Executors;
@@ -42,6 +55,12 @@ public class EmailList {
     private LoginActivity login;
     private List<Header> oldHeaders = new ArrayList<>();
     private String mNewestMessageId = "";
+    public String authCode;
+//    private int fetchCount;
+    public String server_client_id;
+    public String client_secret;
+    public Intent gotoLoginPage;
+    private ScheduledExecutorService executor;
 
     public String getNewestMessageId(){
         return mNewestMessageId;
@@ -56,33 +75,60 @@ public class EmailList {
         this.service = null;
         this.accessToken = null;
         this.userId = "me";
+//        this.fetchCount = 0;
+        this.authCode = null;
     }
 
     public void setLogin(final LoginActivity login){
         this.login = login;
     }
-
-    public void initialize(String accessToken, String channel_id) throws IOException, MessagingException {
+    public void setRefresh(String authCode, String server_client_id, String client_secret){
+        this.authCode = authCode;
+        this.server_client_id = server_client_id;
+        this.client_secret = client_secret;
+    }
+    public void setService(String accessToken){
         this.accessToken = accessToken;
-        this.channel_id = channel_id;
-        this.login = login;
+        System.out.println("new access token: "+this.accessToken);
         this.credential = new GoogleCredential().setAccessToken(accessToken);
         this.service = new Gmail.Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance(), credential)
                 .setApplicationName("MySmartUSC").build();
+    }
+    public void setIntent(Intent gotoLoginPage){
+        this.gotoLoginPage = gotoLoginPage;
+    }
+    public void refresh(){
+        this.login.signOut();
+        this.login.startActivity(this.gotoLoginPage);g
+        this.login.signIn();
+    }
 
-        ScheduledExecutorService executor =
+    public void initialize(String accessToken, String channel_id) throws IOException, MessagingException {
+        this.channel_id = channel_id;
+        this.login = login;
+        this.setService(accessToken);
+//        if(this.executor!=null) return;
+        this.executor =
                 Executors.newSingleThreadScheduledExecutor();
 
         Runnable periodicTask = new Runnable() {
+            int fetchCount = 0;
             public void run() {
                 // Invoke method(s) to do the work
                 try {
                     List<Header> headers = listMessages();
+                    System.out.println(headers.size());
                     login.createNotification(headers, oldHeaders);
                     oldHeaders = headers;
                 } catch (IOException | MessagingException e) {
                     e.printStackTrace();
                 }
+                fetchCount++;
+                System.out.println("Fetch count: "+fetchCount);
+                if(fetchCount%2==0){
+                    EmailList.getInstance().refresh();
+                }
+
             }
         };
 
@@ -227,7 +273,7 @@ public class EmailList {
     }
 
     public void markAsRead(String messageId){
-        List<String> labelsToRemove = new ArrayList<String>();
+        List<String> labelsToRemove = new ArrayList<>();
         labelsToRemove.add("UNREAD");
         ModifyMessageRequest mods = new ModifyMessageRequest().setRemoveLabelIds(labelsToRemove);
         try{
@@ -240,7 +286,7 @@ public class EmailList {
     }
 
     public void markAsStar(String messageId){
-        List<String> labelsToAdd = new ArrayList<String>();
+        List<String> labelsToAdd = new ArrayList<>();
         labelsToAdd.add("STARRED");
         ModifyMessageRequest mods = new ModifyMessageRequest().setAddLabelIds(labelsToAdd);
         try{

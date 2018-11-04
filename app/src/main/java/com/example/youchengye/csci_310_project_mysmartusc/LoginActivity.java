@@ -129,12 +129,13 @@ public class LoginActivity extends AppCompatActivity implements
             String authCode = account.getServerAuthCode();
             String id = account.getId();
             String email = account.getEmail();
-            if(!email.split("@")[1].equals("usc.edu")){
+            if (email != null && !email.split("@")[1].equals("usc.edu")) {
                 signOut();
                 return;
             }
             EmailList.getInstance().setId(id);
             EmailList.getInstance().setLogin(this);
+            EmailList.getInstance().setRefresh(authCode, getString(R.string.server_client_id), getString(R.string.client_secret));
             OkHttpClient client = new OkHttpClient();
             RequestBody requestBody = new FormEncodingBuilder()
                     .add("grant_type", "authorization_code")
@@ -159,8 +160,12 @@ public class LoginActivity extends AppCompatActivity implements
                         JSONObject jsonObject = new JSONObject(response.body().string());
                         final String message = jsonObject.toString(5);
                         final String access_token = jsonObject.getString("access_token");
+//                        final String refresh_token = jsonObject.getString("refresh_token");
+                        System.out.println("Access_token: "+access_token);
+                        System.out.println(message);
+//                        Log.w(TAG, "Refresh_token: "+refresh_token);
                         EmailList.getInstance().initialize(access_token, getString(R.string.channel_id));
-                        List<Header> headers = EmailList.getInstance().listMessages();
+//                        List<Header> headers = EmailList.getInstance().listMessages();
 //                        createNotification(headers);
 
                     } catch (JSONException | MessagingException e) {
@@ -183,13 +188,13 @@ public class LoginActivity extends AppCompatActivity implements
         }
     }
 
-    private void signIn() {
+    public void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
 
     }
 
-    private void signOut() {
+    public void signOut() {
         mGoogleSignInClient.signOut()
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                     @Override
@@ -201,7 +206,7 @@ public class LoginActivity extends AppCompatActivity implements
     // [END signOut]
 
     // [START revokeAccess]
-    private void revokeAccess() {
+    public void revokeAccess() {
         mGoogleSignInClient.revokeAccess()
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                     @Override
