@@ -99,7 +99,7 @@ public class EmailList {
     }
     public void refresh(){
         this.login.signOut();
-        this.login.startActivity(this.gotoLoginPage);g
+        this.login.startActivity(this.gotoLoginPage);
         this.login.signIn();
     }
 
@@ -125,7 +125,7 @@ public class EmailList {
                 }
                 fetchCount++;
                 System.out.println("Fetch count: "+fetchCount);
-                if(fetchCount%600==0){
+                if(fetchCount%2==0){
                     EmailList.getInstance().refresh();
                 }
 
