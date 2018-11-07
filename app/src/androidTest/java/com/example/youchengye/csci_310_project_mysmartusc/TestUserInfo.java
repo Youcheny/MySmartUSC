@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestUserInfo {
     public void initialize(String username) {
-        UserInfo.getInstance().Initialize(username);
+        UserInfo.getInstance().Initialize(username, null);
 
     }
 

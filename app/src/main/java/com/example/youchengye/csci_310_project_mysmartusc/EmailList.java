@@ -99,7 +99,7 @@ public class EmailList {
     }
     public void refresh(){
         this.login.signOut();
-        this.login.startActivity(this.gotoLoginPage);g
+        this.login.startActivity(this.gotoLoginPage);
         this.login.signIn();
     }
 
