@@ -100,7 +100,7 @@ public class UserInfo {
                 setImportantEmailAddressList((ArrayList<String>) databaseUserInfoRetrieval.get("importantEmailAddressList"));
                 Log.d(TAG, document.getId() + " => " + document.getData());
                 // information has been retrieved from database
-                ui.updateList(false);
+                if (ui != null) ui.updateList(false);
             }
         }
     }
