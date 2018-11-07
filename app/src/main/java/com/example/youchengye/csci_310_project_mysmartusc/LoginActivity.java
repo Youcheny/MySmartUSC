@@ -1,11 +1,12 @@
 package com.example.youchengye.csci_310_project_mysmartusc;
 
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentHostCallback;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +14,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.example.youchengye.csci_310_project_mysmartusc.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -38,9 +38,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
 
@@ -253,11 +250,39 @@ public class LoginActivity extends AppCompatActivity implements
         List<Header> importantEmails = checkEmail(newEmails);
         Log.w("importantEmails size", Integer.toString(importantEmails.size()));
         if (importantEmails!=null && importantEmails.size()!=0) {
+//            Intent LaunchIntent = null;
+//            PackageManager pm = getApplicationContext().getPackageManager();
+//            String name = "";
+//            try {
+//                if (pm != null) {
+//                    ApplicationInfo app = pm.getApplicationInfo("com.google.android.gm", 0);
+//                    name = (String) pm.getApplicationLabel(app);
+//                    LaunchIntent = pm.getLaunchIntentForPackage("com.google.android.gm");
+//                }
+//                Toast.makeText(getApplicationContext(),"Found it:" + name,Toast.LENGTH_SHORT).show();
+//            } catch (PackageManager.NameNotFoundException e) {
+//                e.printStackTrace();
+//            }
+//            Intent intent = LaunchIntent; // new Intent();
+//            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+
+            Intent notifyIntent = new Intent(this, OpenGmailActivity.class);
+            // Set the Activity to start in a new, empty task
+            notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            // Create the PendingIntent
+            PendingIntent notifyPendingIntent = PendingIntent.getActivity(
+                    this, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT
+            );
+
+
+
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.channel_id))
                     .setSmallIcon(R.drawable.ic_channel_icon)
                     .setContentTitle("Important Emails")
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                    .setContentIntent(notifyPendingIntent)
+                    .setAutoCancel(true);
 
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
             PowerManager powerManager = (PowerManager) this.getSystemService(POWER_SERVICE);
@@ -277,6 +302,7 @@ public class LoginActivity extends AppCompatActivity implements
                                 .bigText(importantEmails.get(i).content))
                         .setContentTitle(importantEmails.get(i).subject) // this should replace subject with sender in brief
                         .setContentText(importantEmails.get(i).content);
+
 
                 notificationManager.notify(i, builder.build());
             }
