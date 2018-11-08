@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -24,11 +25,13 @@ import java.util.List;
 public class KeywordAddressModificationActivity extends AppCompatActivity {
 
     private static Integer currentListID;
+    private ProgressBar databaseLoadingSpinner;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_keyword_address_modification);
-        // Populate the spinner with default values
+        databaseLoadingSpinner = (ProgressBar)findViewById(R.id.databaseProgressBar);
+        displayAndStartDatabaseLoadingSpinner();
         populateSpinnerValues();
         currentListID = 0;
 
@@ -40,7 +43,17 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
             }
             Log.w("intent","not null");
         }
+    }
 
+    // Database Retrieval Waiting spinner
+    public void displayAndStartDatabaseLoadingSpinner() {
+        databaseLoadingSpinner.setIndeterminate(true);
+        databaseLoadingSpinner.setVisibility(View.VISIBLE);
+    }
+
+    public void hideAndStopDatabaseLoadingSpinner() {
+        databaseLoadingSpinner.setIndeterminate(false);
+        databaseLoadingSpinner.setVisibility(View.GONE);
     }
 
     // List Selection Spinner

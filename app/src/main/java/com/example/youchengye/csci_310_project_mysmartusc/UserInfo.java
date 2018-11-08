@@ -4,22 +4,12 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldPath;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
-
-import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,6 +46,9 @@ public class UserInfo {
     // Database (Firebase Firestore)
     FirebaseFirestore firestore;
 
+    // UI (Android)
+    KeywordAddressModificationActivity ui;
+
     // Variable Initialization
     public String username;
     private List<String> titleBlackList = new ArrayList<String>();
@@ -80,9 +73,9 @@ public class UserInfo {
     private boolean contentStarListChanged;
     private boolean importantEmailAddressListChanged;
 
-    private class OnDatabaseRetrievalCompleteListener implements OnCompleteListener {
+    private class OnDatabaseReadCompleteListener implements OnCompleteListener {
         KeywordAddressModificationActivity ui;
-        public OnDatabaseRetrievalCompleteListener(KeywordAddressModificationActivity ui) {
+        public OnDatabaseReadCompleteListener(KeywordAddressModificationActivity ui) {
             this.ui = ui;
         }
         @Override
@@ -100,12 +93,29 @@ public class UserInfo {
                 setImportantEmailAddressList((ArrayList<String>) databaseUserInfoRetrieval.get("importantEmailAddressList"));
                 Log.d(TAG, document.getId() + " => " + document.getData());
                 // information has been retrieved from database
-                if (ui != null) ui.updateList(false);
+                if (ui != null) {
+                    ui.updateList(false);
+                    ui.hideAndStopDatabaseLoadingSpinner();
+                }
             }
         }
     }
+
+    private class OnDatabaseWriteCompleteListener implements OnCompleteListener {
+        KeywordAddressModificationActivity ui;
+        public OnDatabaseWriteCompleteListener(KeywordAddressModificationActivity ui) {
+            this.ui = ui;
+        }
+        @Override
+        public void onComplete(@NonNull Task task) {
+            ui.hideAndStopDatabaseLoadingSpinner();
+        }
+    }
+
+
     public void Initialize(String username, KeywordAddressModificationActivity ui) {
         this.username = username;
+        this.ui = ui;
         titleBlackListChanged = false;
         titleWhiteListChanged = false;
         titleStarListChanged = false;
@@ -115,8 +125,9 @@ public class UserInfo {
         importantEmailAddressListChanged = false;
         // retrieve and initialize all the lists in UserData Object
         DocumentReference userRef = firestore.collection("Users").document(username);
-        userRef.get().addOnCompleteListener(new OnDatabaseRetrievalCompleteListener(ui));
+        userRef.get().addOnCompleteListener(new OnDatabaseReadCompleteListener(ui));
     }
+
     // getters and setters
     public List<String> getTitleBlackList() {return titleBlackList;}
     public List<String> getTitleWhiteList() {return titleWhiteList;}
@@ -239,7 +250,8 @@ public class UserInfo {
         if (importantEmailAddressListChanged)
             changes.put("importantEmailAddressList", importantEmailAddressList);
         DocumentReference userRef = FirebaseFirestore.getInstance().collection("Users").document(username);
-        userRef.set(changes, SetOptions.merge());
+        ui.displayAndStartDatabaseLoadingSpinner();
+        userRef.set(changes, SetOptions.merge()).addOnCompleteListener(new OnDatabaseWriteCompleteListener(ui));
     }
 
     // Clear function
