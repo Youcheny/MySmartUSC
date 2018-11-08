@@ -72,6 +72,7 @@ public class UserInfo {
     private boolean contentWhiteListChanged;
     private boolean contentStarListChanged;
     private boolean importantEmailAddressListChanged;
+    public boolean MainActivityStarted = false;
 
     private class OnDatabaseReadCompleteListener implements OnCompleteListener {
         KeywordAddressModificationActivity ui;
