@@ -108,7 +108,7 @@ public class UserInfo {
         }
         @Override
         public void onComplete(@NonNull Task task) {
-            ui.hideAndStopDatabaseLoadingSpinner();
+            if (ui != null) ui.hideAndStopDatabaseLoadingSpinner();
         }
     }
 
@@ -250,7 +250,7 @@ public class UserInfo {
         if (importantEmailAddressListChanged)
             changes.put("importantEmailAddressList", importantEmailAddressList);
         DocumentReference userRef = FirebaseFirestore.getInstance().collection("Users").document(username);
-        ui.displayAndStartDatabaseLoadingSpinner();
+        if (ui != null) ui.displayAndStartDatabaseLoadingSpinner();
         userRef.set(changes, SetOptions.merge()).addOnCompleteListener(new OnDatabaseWriteCompleteListener(ui));
     }
 
