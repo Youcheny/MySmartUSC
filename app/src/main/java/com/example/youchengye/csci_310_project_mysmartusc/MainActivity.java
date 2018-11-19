@@ -95,13 +95,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(gotoLoginPage);
     }
 
-    // --- for testing only!
-    public void onClickKeywordsModification(View view) {
-        Intent gotoKeywordsModificationPage = new Intent(this, KeywordAddressModificationActivity.class);
-        startActivity(gotoKeywordsModificationPage);
-    }
-    // --- remove before release!
-
 
     private void createNotificationChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
