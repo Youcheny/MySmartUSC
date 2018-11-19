@@ -15,18 +15,24 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity"/>
-        <activity android:name=".KeywordAddressModificationActivity"/>
+
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".KeywordAddressModificationActivity" />
         <activity
             android:name=".OpenGmailActivity"
+            android:excludeFromRecents="true"
             android:launchMode="singleTask"
-            android:taskAffinity=""
-            android:excludeFromRecents="true">
-        </activity>
+            android:taskAffinity="" />
+        <!--<activity android:name=".ImportantMailsActivity">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
+        <activity android:name=".ImportantMailsActivity"></activity>
     </application>
 
 </manifest>

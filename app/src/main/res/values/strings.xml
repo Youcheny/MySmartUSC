@@ -60,13 +60,14 @@
 
     <string name="server_client_id">75321107364-44fciaa6e308bsn6kur5nkest9c51ra9.apps.googleusercontent.com</string>
     <string name="client_secret">Vv6yRIda4kgZxCOmyBhb4-YZ</string>
-    
+
     <!-- notification system -->
-    <string name = "channel_name">MySmartUSC Notification Channel</string>
-    <string name = "channel_description">Push important app message to users</string>
+    <string name="channel_name">MySmartUSC Notification Channel</string>
+    <string name="channel_description">Push important app message to users</string>
     <string name="channel_id">Important Mails</string>
 
     <!-- newly defined ids -->
-    <item name="new_keyword_edit_text" type="id"/>
+    <item name="new_keyword_edit_text" type="id" />
+    <string name="title_activity_important_mails">important_mails</string>
 
 </resources>
