@@ -32,7 +32,6 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_keyword_address_modification);
         databaseLoadingSpinner = (ProgressBar) findViewById(R.id.databaseProgressBar);
-        displayAndStartDatabaseLoadingSpinner();
         populateSpinnerValues();
         currentListID = 0;
 

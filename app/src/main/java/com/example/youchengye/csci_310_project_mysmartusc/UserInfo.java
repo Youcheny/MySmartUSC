@@ -116,6 +116,8 @@ public class UserInfo {
 
 
     public void Initialize(String username, KeywordAddressModificationActivity ui) {
+        if (this.username != null && username != null && this.username.equals(username))
+            return; // nothing to initialize
         this.username = username;
         this.ui = ui;
         titleBlackListChanged = false;
@@ -127,6 +129,7 @@ public class UserInfo {
         importantEmailAddressListChanged = false;
         // retrieve and initialize all the lists in UserData Object
         DocumentReference userRef = firestore.collection("Users").document(username);
+        ui.displayAndStartDatabaseLoadingSpinner();
         userRef.get().addOnCompleteListener(new OnDatabaseReadCompleteListener(ui));
     }
 
