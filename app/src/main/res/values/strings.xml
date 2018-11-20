@@ -69,5 +69,6 @@
     <!-- newly defined ids -->
     <item name="new_keyword_edit_text" type="id" />
     <string name="title_activity_important_mails">important_mails</string>
+    <!--<string name="title_activity_receive_text">MySmartUSC</string>-->
 
 </resources>

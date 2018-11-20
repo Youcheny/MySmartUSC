@@ -48,7 +48,7 @@ public class EmailList {
     private GoogleCredential credential;
     private Gmail service;
     private String userId;
-    private String accessToken;
+    public String accessToken;
     private static EmailList singleInstance;
     private final int NOTIFICATION_ID = 1;
     private String channel_id;
