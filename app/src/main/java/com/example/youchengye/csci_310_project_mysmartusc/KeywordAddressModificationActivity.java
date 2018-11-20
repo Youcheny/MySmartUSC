@@ -38,15 +38,8 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
         if (getIntent() != null) {
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
-                if(extras.containsKey("username")){
-                    String username = extras.getString("username");
-                    UserInfo.getInstance().Initialize(username, this);
-                }
-                else if(extras.containsKey("sharedText")){
-                    String sharedText = extras.getString("sharedText");
-                    System.out.println("Shared TEXT received: "+sharedText);
-                    UserInfo.getInstance().addContentWhiteList(sharedText);
-                }
+                String username = extras.getString("username");
+                UserInfo.getInstance().Initialize(username, this);
             }
             Log.w("intent", "not null");
         }

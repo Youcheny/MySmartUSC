@@ -37,7 +37,7 @@ public class ReceiveTextActivity extends Activity {
             Log.i(TAG, "Shared text received: "+sharedText);
             UserInfo.getInstance().addContentWhiteList(sharedText);
             Intent gotoKeywordPage = new Intent(this, KeywordAddressModificationActivity.class);
-            intent.putExtra("sharedText", sharedText);
+//            intent.putExtra("sharedText", sharedText);
             startActivity(gotoKeywordPage);
         }
     }
