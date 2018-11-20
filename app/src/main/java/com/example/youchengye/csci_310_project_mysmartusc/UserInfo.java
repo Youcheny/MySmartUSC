@@ -116,7 +116,9 @@ public class UserInfo {
 
 
     public void Initialize(String username, KeywordAddressModificationActivity ui) {
-        if (this.username != null && username != null && this.username.equals(username))
+        if (username == null)
+            return; // invalid
+        if (this.username != null && this.username.equals(username))
             return; // nothing to initialize
         this.username = username;
         this.ui = ui;
