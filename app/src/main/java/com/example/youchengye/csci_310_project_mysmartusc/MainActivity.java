@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
              */
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main);
+            UserInfo.getInstance().jumpedToGmailFromCollapsedNotifications = true;
             Intent intent = new Intent("android.intent.action.MAIN");
             intent.addCategory("android.intent.category.LAUNCHER");
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         Log.d("MainActivity", "onResume");
+        if(UserInfo.getInstance().jumpedToGmailFromCollapsedNotifications == true) finish();
     }
 
     @Override

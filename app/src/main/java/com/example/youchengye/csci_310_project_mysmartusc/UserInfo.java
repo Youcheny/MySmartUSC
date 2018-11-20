@@ -73,6 +73,7 @@ public class UserInfo {
     private boolean contentStarListChanged;
     private boolean importantEmailAddressListChanged;
     public boolean MainActivityStarted = false;
+    public boolean jumpedToGmailFromCollapsedNotifications = false;
 
     private class OnDatabaseReadCompleteListener implements OnCompleteListener {
         KeywordAddressModificationActivity ui;
