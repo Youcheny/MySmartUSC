@@ -248,23 +248,9 @@ public class LoginActivity extends AppCompatActivity implements
     public void createNotification(List<Header> headers, List<Header> oldHeaders){
         List<Header> newEmails = checkNew(headers, oldHeaders);
         List<Header> importantEmails = checkEmail(newEmails);
+
         Log.w("importantEmails size", Integer.toString(importantEmails.size()));
         if (importantEmails!=null && importantEmails.size()!=0) {
-//            Intent LaunchIntent = null;
-//            PackageManager pm = getApplicationContext().getPackageManager();
-//            String name = "";
-//            try {
-//                if (pm != null) {
-//                    ApplicationInfo app = pm.getApplicationInfo("com.google.android.gm", 0);
-//                    name = (String) pm.getApplicationLabel(app);
-//                    LaunchIntent = pm.getLaunchIntentForPackage("com.google.android.gm");
-//                }
-//                Toast.makeText(getApplicationContext(),"Found it:" + name,Toast.LENGTH_SHORT).show();
-//            } catch (PackageManager.NameNotFoundException e) {
-//                e.printStackTrace();
-//            }
-//            Intent intent = LaunchIntent; // new Intent();
-//            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
 
             Intent notifyIntent = new Intent(this, OpenGmailActivity.class);
             // Set the Activity to start in a new, empty task
@@ -323,15 +309,17 @@ public class LoginActivity extends AppCompatActivity implements
         List<String> titleStarList = UserInfo.getInstance().getTitleStarList();
         List<String> cotentStarList = UserInfo.getInstance().getContentStarList();
         List<String>  titleBlackList = UserInfo.getInstance().getTitleBlackList();
-        List<String> contentBlackList  =UserInfo.getInstance().getContentBlackList();
+        List<String> contentBlackList = UserInfo.getInstance().getContentBlackList();
 
         Set<Header> checkers = new HashSet<>();
         for (Header h:headers) {
+            Boolean checked = false;
             for (String keyword:titleWhiteList){
                 if (h.subject.toLowerCase().contains(keyword.toLowerCase())){
-                    if (!checkers.contains(h)){
+                    if (!checkers.contains(h) && checked==false){
                         importantEmails.add(h);
                         checkers.add(h);
+                        checked = true;
                     }
                     break;
                 }
@@ -339,9 +327,10 @@ public class LoginActivity extends AppCompatActivity implements
 
             for (String keyword: contentWhiteList){
                 if (h.content.toLowerCase().contains(keyword.toLowerCase())){
-                    if (!checkers.contains(h)){
+                    if (!checkers.contains(h)&& checked==false){
                         importantEmails.add(h);
                         checkers.add(h);
+                        checked = true;
                     }
                     break;
                 }
@@ -349,9 +338,10 @@ public class LoginActivity extends AppCompatActivity implements
 
             for (String keyword: importantEmailAddresses){
                 if (h.from.toLowerCase().contains(keyword.toLowerCase())){
-                    if (!checkers.contains(h)){
+                    if (!checkers.contains(h)&& checked==false){
                         importantEmails.add(h);
                         checkers.add(h);
+                        checked = true;
                         break;
                     }
                 }
@@ -400,6 +390,7 @@ public class LoginActivity extends AppCompatActivity implements
             }
 
         }
+        ImportantMailsActivity.addHeaders(importantEmails);
         return importantEmails;
     }
 
@@ -440,6 +431,9 @@ public class LoginActivity extends AppCompatActivity implements
                 i++;
             }
         }
+
+
+
         return newEmails;
     }
 

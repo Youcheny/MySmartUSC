@@ -77,6 +77,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true" />
+
+        <Button
+            android:id="@+id/emailPageBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="102dp"
+            android:layout_marginTop="59dp"
+            android:text="Emails Page" />
     </RelativeLayout>
 
 

@@ -3,6 +3,7 @@ package com.example.youchengye.csci_310_project_mysmartusc;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,19 +31,29 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_keyword_address_modification);
-        databaseLoadingSpinner = (ProgressBar)findViewById(R.id.databaseProgressBar);
+        databaseLoadingSpinner = (ProgressBar) findViewById(R.id.databaseProgressBar);
         displayAndStartDatabaseLoadingSpinner();
         populateSpinnerValues();
         currentListID = 0;
 
-        if(getIntent()!=null){
+        if (getIntent() != null) {
             Bundle extras = getIntent().getExtras();
-            if (extras!=null){
+            if (extras != null) {
                 String username = extras.getString("username");
                 UserInfo.getInstance().Initialize(username, this);
             }
-            Log.w("intent","not null");
+            Log.w("intent", "not null");
         }
+
+        //jump to important emails list
+        Button btn = (Button) findViewById(R.id.emailPageBtn);
+        btn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent gotoEmailPage = new Intent(getApplicationContext(), ImportantMailsActivity.class);
+                startActivity(gotoEmailPage);
+            }
+        });
+
     }
 
     // Database Retrieval Waiting spinner
