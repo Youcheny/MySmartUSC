@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity implements
     private static final int RC_SIGN_IN = 9001;
     private GoogleSignInClient mGoogleSignInClient;
     private TextView mStatusTextView;
-
+    public static List<Header> saveEmails = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -248,7 +248,7 @@ public class LoginActivity extends AppCompatActivity implements
     public void createNotification(List<Header> headers, List<Header> oldHeaders){
         List<Header> newEmails = checkNew(headers, oldHeaders);
         List<Header> importantEmails = checkEmail(newEmails);
-
+        saveEmails.addAll(importantEmails) ;
         Log.w("importantEmails size", Integer.toString(importantEmails.size()));
         if (importantEmails!=null && importantEmails.size()!=0) {
 
@@ -390,7 +390,7 @@ public class LoginActivity extends AppCompatActivity implements
             }
 
         }
-        ImportantMailsActivity.addHeaders(importantEmails);
+//        ImportantMailsActivity.addHeaders(importantEmails);
         return importantEmails;
     }
 

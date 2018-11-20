@@ -12,23 +12,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ImportantMailsActivity extends AppCompatActivity {
-    private static List<Header> importantEmails = new ArrayList<>();
-    private static ListView listView;
+    private List<Header> importantEmails = new ArrayList<>();
+    private ListView listView;
     public List<Header> getImportantEmails() {
         return importantEmails;
     }
 
-    public static void addHeaders(List<Header> headers){
-        for (Header h: headers){
-            importantEmails.add(0, h);
-        }
+    public void addHeaders(List<Header> headers){
+        importantEmails.addAll(headers);
         ((BaseAdapter)listView.getAdapter()).notifyDataSetChanged();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+//        importantEmails.add(new Header("Ruoxi Jia","Testing","listview","asdf","words"));
+//        importantEmails.add(new Header("Ruoxi Jia2","Testing","listview","asdf","words"));
+//        importantEmails.add(new Header("Ruoxi Jia3","Testing","listview","asdf","words"));
+//        importantEmails.add(new Header("Ruoxi Jia4","Testing","listview","asdf","words"));
+//        importantEmails.add(new Header("Ruoxi Jia5","Testing","listview","asdf","words"));
+//        importantEmails.add(new Header("Ruoxi Jia6","Testing","listview","asdf","words"));
+//        importantEmails.add(new Header("Ruoxi Jia7","Testing","listview","asdf","words"));
+//        importantEmails.add(new Header("Ruoxi Jia8","Testing","listview","asdf","words"));
+        importantEmails.addAll(LoginActivity.saveEmails);
         setContentView(R.layout.activity_important_mails);
 
         listView = (ListView) findViewById(R.id.importantMailsListView);
