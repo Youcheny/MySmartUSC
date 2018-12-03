@@ -1,5 +1,6 @@
 package com.example.youchengye.csci_310_project_mysmartusc;
 
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +11,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class ImportantMailsActivity extends AppCompatActivity {
     private List<Header> importantEmails = new ArrayList<>();
@@ -17,6 +20,7 @@ public class ImportantMailsActivity extends AppCompatActivity {
     public List<Header> getImportantEmails() {
         return importantEmails;
     }
+    public CustomAdapter customAdapter;
 
     public void addHeaders(List<Header> headers){
         importantEmails.addAll(headers);
@@ -34,13 +38,26 @@ public class ImportantMailsActivity extends AppCompatActivity {
 //        importantEmails.add(new Header("Ruoxi Jia6","Testing","listview","asdf","words"));
 //        importantEmails.add(new Header("Ruoxi Jia7","Testing","listview","asdf","words"));
 //        importantEmails.add(new Header("Ruoxi Jia8","Testing","listview","asdf","words"));
-        importantEmails.addAll(LoginActivity.saveEmails);
-        setContentView(R.layout.activity_important_mails);
 
+        setContentView(R.layout.activity_important_mails);
+//        ScheduledExecutorService se;
+//        se.scheduleAtFixedRate(run, 0, 5, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        importantEmails.addAll(LoginActivity.saveEmails);
+        if(importantEmails.size() != 0)
+        {
+            TextView textView = (TextView) findViewById(R.id.NoEmailsPrompt);
+            textView.setVisibility(View.INVISIBLE);
+        }
         listView = (ListView) findViewById(R.id.importantMailsListView);
 
-        CustomAdapter customAdapter = new CustomAdapter();
+        customAdapter = new CustomAdapter();
         listView.setAdapter(customAdapter);
+
     }
 
     class CustomAdapter extends BaseAdapter{

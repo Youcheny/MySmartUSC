@@ -1,17 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ImportantMailsActivity">
+    android:orientation="vertical"
+    tools:context=".ImportantMailsActivity"
+    android:clipChildren="false">
 
     <ListView
         android:id="@+id/importantMailsListView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="20dp"
-        ></ListView>
+        android:layout_height="452dp"
+        android:layout_marginTop="20dp"></ListView>
+
+    <TextView
+        android:id="@+id/NoEmailsPrompt"
+        android:layout_width="255dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="211dp"
+        android:background="#00000000"
+        android:gravity="center"
+        android:text="You will be notified when you receive an important Email" />
 
 
-</LinearLayout>
+</RelativeLayout>
