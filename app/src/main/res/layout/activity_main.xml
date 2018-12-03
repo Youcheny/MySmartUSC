@@ -4,33 +4,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-
-    android:background="@drawable/login_bg">
+    tools:context=".MainActivity">
 
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/LinearLayout1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
 
         <Button
             android:id="@+id/login"
             android:layout_width="150dp"
             android:layout_height="50dp"
-            android:layout_marginBottom="20dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="69dp"
             android:elevation="0dp"
             android:onClick="onClickLogin"
             android:padding="10dp"
             android:text="@string/login_button_text"
             android:theme="@style/AppTheme.Button" />
 
-    </LinearLayout>
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="230dp"
+            android:layout_height="152dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="107dp"
+            app:srcCompat="@drawable/trojan" />
+
+    </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>
