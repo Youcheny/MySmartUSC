@@ -33,32 +33,39 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
-
-            android:onClick="onClickModifyList"
-            android:padding="10dp"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="3dp"
             android:text="Modify List"
             android:layout_gravity="right"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spinner"
-            android:theme="@style/AppTheme.Button"/>
+            android:theme="@style/AppTheme.Button"
+            android:drawableLeft="@drawable/ic_edit_list_foreground"
+            android:onClick="onClickModifyList"/>
 
         <Button
             android:id="@+id/addKeyword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-
-            android:text="+ Add New Keyword"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="3dp"
+            android:text="Add"
+            android:theme="@style/AppTheme.Button"
+            android:drawableLeft="@drawable/ic_add_new_foreground"
             android:visibility="gone"
-            android:onClick="onClickAddKeyword"
-            android:theme="@style/AppTheme.Button"/>
+            android:onClick="onClickAddKeyword"/>
+
         <Button
             android:id="@+id/emailPageBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="3dp"
             android:text="Emails Page"
-            android:theme="@style/AppTheme.Button"/>
+            android:theme="@style/AppTheme.Button"
+            android:drawableLeft="@drawable/ic_email_list_foreground"/>
 
     </LinearLayout>
 

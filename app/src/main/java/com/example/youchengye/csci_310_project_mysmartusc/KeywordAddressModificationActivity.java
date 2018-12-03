@@ -86,6 +86,7 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
             updateList(false); // initially not in modification state
             Button modifyListButton = (Button)findViewById((R.id.modifyList));
             modifyListButton.setText("Modify List");
+            modifyListButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_edit_list_foreground, 0, 0, 0);
             Button addKeywordButton = (Button)findViewById(R.id.addKeyword);
             addKeywordButton.setVisibility(View.GONE);
         }
@@ -98,18 +99,21 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
 
     // List Modification Buttons
     public void onClickModifyList(View view) {
+        Button modifyListButton = (Button)view;
         ListView currentListView = (ListView)findViewById(R.id.currlist);
 
-        if (((Button)view).getText().equals("Modify List")) {
+        if (modifyListButton.getText().equals("Modify List")) {
             // Modifying list
-            ((Button)view).setText("Done!");
+            modifyListButton.setText("Done");
+            modifyListButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_done_foreground, 0, 0, 0);
             Button addKeywordButton = (Button)findViewById(R.id.addKeyword);
             addKeywordButton.setVisibility(View.VISIBLE);
             updateList(true);
         }
         else {
             // Done Modifying list
-            ((Button)view).setText("Modify List");
+            modifyListButton.setText("Modify List");
+            modifyListButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_edit_list_foreground, 0, 0, 0);
             Button addKeywordButton = (Button)findViewById(R.id.addKeyword);
             addKeywordButton.setVisibility(View.GONE);
             // Write to Database
@@ -201,8 +205,10 @@ public class KeywordAddressModificationActivity extends AppCompatActivity {
         updatedList = new ArrayList<String>((ArrayList<String>) updatedList); // make a deep copy to prevent modifying the list in UserInfo
         if (showClickToRemove) {
             currentListView.setOnItemClickListener(new OnDeleteWordRowListener());
-            for (int i = 0; i < updatedList.size(); ++i)
+            for (int i = 0; i < updatedList.size(); ++i) {
                 updatedList.set(i, updatedList.get(i) + " - click to remove");
+            }
+
         }
         else {
             currentListView.setOnItemClickListener(null);
