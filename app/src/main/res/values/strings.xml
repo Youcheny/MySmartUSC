@@ -69,6 +69,14 @@
     <!-- newly defined ids -->
     <item name="new_keyword_edit_text" type="id" />
     <string name="title_activity_important_mails">important_mails</string>
+    <string name="title_activity_receive_word">ReceiveWordActivity</string>
+    <string name="checkbox_TitleRead">Title Mark As Read</string>
+    <string name="checkbox_TitleImportant">Title Importent</string>
+    <string name="checkbox_ContentRead">Content Mark As Read</string>
+    <string name="checkbox_ContentImportant">Content Important</string>
+    <string name="checkbox_ContentStar">Content star</string>
+    <string name="checkbox_ImportentEmailAddress">Important Email Addresses</string>
+    <string name="button_confirm">Confirm</string>
     <!--<string name="title_activity_receive_text">MySmartUSC</string>-->
 
 </resources>
