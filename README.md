@@ -52,4 +52,13 @@ Sprint 2
 	
 5. Complete the feature of redirecting to Gmail when notification is clicked. The user will now be redirected to Gmail when tapping a notification either showed up at top of the screen, in the drop-down list or collapsed in the drop-down list. The user can navigate back to the KeywordAddressModification page when navigating back from Gmail. Thus, the normal activity flow is maintained.
 
+Sprint 3
+1. The User Interface of the App is completely revised the embellished.
+	a. Added prompts to an empty email list page (i.e.”No important emails yet”) so that they are not entirely blank.
+	b. Changed the background of the main page from a Tommy Trojan photo to a Trojan icon to make main page cleaner and more visually appealing.
+	c. Added icons to buttons in Keywords Modification page, in order to provide users with both text and image guide on what function each button has.
+	d. Revised Important Emails List UI for two lines to not overlap each other. Also, margin bottom of snippet textview is deleted.
+2. After selected a word and clicked share to MySmartUSC, a user is led to a list selection page instead of going directly to the KeywordAddressModification page. The user can select which lists to add this keyword. After comfirming, the user will be led to the KeywordAddressModification page as before and can see the keyword exists in all the desired lists.
+
+
 
